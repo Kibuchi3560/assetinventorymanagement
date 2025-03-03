@@ -6,14 +6,14 @@ name = "pypi"
 [packages]
 flask-bcrypt = "*"
 flask-login = "*"
-flask-cors = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
+flask-cors = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.8"
