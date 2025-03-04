@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://my_user:fHV0KI3qGMuAQgGKhbZSLtouptv96eyS@dpg-cv2pr9dumphs739tj4g0-a.oregon-postgres.render.com/mydatabase1_m56n"
 app.config['SECRET_KEY'] = 'your_secure_secret_key'
 
 # Enable CORS (with credentials) for cross-origin requests.

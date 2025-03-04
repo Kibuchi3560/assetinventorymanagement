@@ -6,13 +6,13 @@ import axios from 'axios';
 const UserForm = () => {
   const dispatch = useDispatch();
   const [departments, setDepartments] = useState([]);
-  const [formData, setFormData] = useState({ username: '', role: 'employee', department: '' });
+  const [formData, setFormData] = useState({ username: '', role: 'Employee', department: '' });
   const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get('/assetinventorymanagement/departments', { withCredentials: true })
-      .then(response => setDepartments(response.data))
-      .catch(error => console.error('Error fetching departments:', error));
+      .then((response) => setDepartments(response.data))
+      .catch((error) => console.error('Error fetching departments:', error));
   }, []);
 
   const handleSubmit = async (e) => {
@@ -23,7 +23,7 @@ const UserForm = () => {
     }
     try {
       await dispatch(addUser(formData)).unwrap();
-      setFormData({ username: '', role: 'employee', department: '' });
+      setFormData({ username: '', role: 'Employee', department: '' });
       setError(null);
     } catch (err) {
       setError('Failed to add user. Please try again.');
@@ -53,9 +53,9 @@ const UserForm = () => {
           value={formData.role}
           onChange={(e) => setFormData({ ...formData, role: e.target.value })}
         >
-          <option value="admin">Admin</option>
-          <option value="procurement">Procurement</option>
-          <option value="employee">Employee</option>
+          <option value="Admin">Admin</option>
+          <option value="Manager">Manager</option>
+          <option value="Employee">Employee</option>
         </select>
       </div>
       <div className="mb-3">

@@ -1,29 +1,41 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import './Navigation.css';
+import { NavLink } from 'react-router-dom';
+import Sidebar from './Sidebar'
 
 const NavigationBar = () => {
-  const navigate = useNavigate(); 
-
-  const handleDashboardClick = () => {
-    navigate('/dashboard'); 
-  };
-
   return (
-    <div className="navigation-container">
-      <nav className="card">
-        <h1 className="heading">Assert Inventory Management System</h1>
-        <h2>Welcome back Manager</h2>
-        <ul>
-          <li>
-            <button onClick={handleDashboardClick} className="dashboard-btn">
-              Dashboard
-            </button>
+    <nav className="bg-light py-2">
+      <div className="container-fluid text-center">
+        <ul className="list-inline mb-0">
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none" activeClassName="fw-bold" to="/">Dashboard</NavLink>
+          </li>
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none" activeClassName="fw-bold" to="/manage-assets">Manage Assets</NavLink>
+          </li>
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none" activeClassName="fw-bold" to="/pending-requests">Pending & Approved Requests</NavLink>
+          </li>
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none" activeClassName="fw-bold" to="/allocation-assert">Allocate Asset</NavLink>
+          </li>
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none" activeClassName="fw-bold" to="/asset-allocated">Asset Allocated</NavLink>
+          </li>
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none" activeClassName="fw-bold" to="/completed-requests">Completed Requests</NavLink>
+          </li>
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none" activeClassName="fw-bold" to="/Rejected">Reject Request</NavLink>
+          </li>
+          <li className="list-inline-item mx-2">
+            <NavLink className="text-decoration-none text-danger" activeClassName="fw-bold" to="/">Exit</NavLink>
           </li>
         </ul>
-      </nav>
-    </div>
-    
+      </div>
+      <Sidebar />
+
+    </nav>
   );
 };
 

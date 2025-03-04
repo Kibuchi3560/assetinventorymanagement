@@ -1,15 +1,19 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
-import { fetchAssets } from '../redux/assetsSlice';
+import { fetchAssets, deleteAsset } from '../redux/assetsSlice';
 
 const AdminAssets = () => {
   const dispatch = useDispatch();
-  const assets = useSelector(state => state.assets.items || []);
+  const assets = useSelector((state) => state.assets.items);
 
   useEffect(() => {
     dispatch(fetchAssets());
   }, [dispatch]);
+
+  const handleDecommission = (id) => {
+    dispatch(deleteAsset(id));
+  };
 
   return (
     <div className="container my-4">
@@ -26,7 +30,7 @@ const AdminAssets = () => {
           </tr>
         </thead>
         <tbody>
-          {assets.map(asset => (
+          {assets.map((asset) => (
             <tr key={asset.id}>
               <td>{asset.id}</td>
               <td>{asset.name}</td>
@@ -35,7 +39,7 @@ const AdminAssets = () => {
               <td>{asset.assignedTo || 'Unassigned'}</td>
               <td>
                 <Button variant="outline-primary" size="sm" className="me-2">Edit</Button>
-                <Button variant="outline-danger" size="sm">Decommission</Button>
+                <Button variant="outline-danger" size="sm" onClick={() => handleDecommission(asset.id)}>Decommission</Button>
               </td>
             </tr>
           ))}

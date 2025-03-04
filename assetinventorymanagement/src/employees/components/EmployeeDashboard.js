@@ -4,23 +4,39 @@ import { Link } from "react-router-dom"; // Import Link component for navigation
 import { fetchRequests, fetchRepairs, fetchAllocatedAssets } from "./api";
 import RequestCard from "./RequestCard";
 
-const Dashboard = () => {
+const EmployeeDashboard = () => {
   const [requests, setRequests] = useState([]);
   const [repairs, setRepairs] = useState([]);
   const [assets, setAssets] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const requestsData = await fetchRequests();
-      const repairsData = await fetchRepairs();
-      const assetsData = await fetchAllocatedAssets();
-      setRequests(requestsData);
-      setRepairs(repairsData);
-      setAssets(assetsData);
+      try {
+        const requestsData = await fetchRequests();
+        const repairsData = await fetchRepairs();
+        const assetsData = await fetchAllocatedAssets();
+        setRequests(requestsData);
+        setRepairs(repairsData);
+        setAssets(assetsData);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
     };
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
     <div>
@@ -80,4 +96,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default EmployeeDashboard;

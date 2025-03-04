@@ -10,37 +10,29 @@ const AssetForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     category: '',
-    department: '',
-    urgency: 'Medium',
     image_url: '',
   });
   const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get('/assetinventorymanagement/categories', { withCredentials: true })
-      .then(response => setCategories(response.data))
-      .catch(error => console.error('Error fetching categories:', error));
+      .then((response) => setCategories(response.data))
+      .catch((error) => console.error('Error fetching categories:', error));
 
     axios.get('/assetinventorymanagement/departments', { withCredentials: true })
-      .then(response => setDepartments(response.data))
-      .catch(error => console.error('Error fetching departments:', error));
+      .then((response) => setDepartments(response.data))
+      .catch((error) => console.error('Error fetching departments:', error));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.category || !formData.department) {
+    if (!formData.name.trim() || !formData.category) {
       setError('Please fill in all required fields.');
       return;
     }
     try {
       await dispatch(addAsset(formData)).unwrap();
-      setFormData({
-        name: '',
-        category: '',
-        department: '',
-        urgency: 'Medium',
-        image_url: '',
-      });
+      setFormData({ name: '', category: '', image_url: '' });
       setError(null);
     } catch (err) {
       setError('Failed to add asset. Please try again.');
@@ -74,21 +66,6 @@ const AssetForm = () => {
           <option value="">Select Category</option>
           {categories.map((cat, idx) => (
             <option key={idx} value={cat}>{cat}</option>
-          ))}
-        </select>
-      </div>
-      <div className="mb-3">
-        <label htmlFor="department" className="form-label">Department</label>
-        <select
-          id="department"
-          className="form-select"
-          value={formData.department}
-          onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-          required
-        >
-          <option value="">Select Department</option>
-          {departments.map((dep, idx) => (
-            <option key={idx} value={dep}>{dep}</option>
           ))}
         </select>
       </div>

@@ -1,82 +1,58 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { logout } from '../redux/authSlice';
-import { useNavigate } from 'react-router-dom';
-import { 
-  FaTachometerAlt, 
-  FaUsers, 
-  FaCube, 
-  FaEnvelope, 
-  FaClipboardList, 
-  FaCogs, 
-  FaChartBar 
-} from 'react-icons/fa';
+import { NavLink } from 'react-router-dom'; // Use NavLink for active styling
+import { FaTachometerAlt, FaUsers, FaCube, FaEnvelope, FaClipboardList, FaCogs, FaChartBar } from 'react-icons/fa';
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   return (
-    <div className="sidebar d-flex flex-column vh-100 border-end bg-light position-fixed">
+    <div className="sidebar d-flex flex-column bg-light border-end" style={{ width: '250px', minHeight: '100vh', overflowY: 'auto' }}>
       <div className="p-3 sidebar-header">
         <h4>Admin Panel</h4>
       </div>
       <ul className="nav nav-pills flex-column mb-auto p-3">
         <li className="nav-item mb-2">
-          <Link to="/admin/dashboard" className="nav-link">
+          <NavLink to="/admin/dashboard" className="nav-link" activeClassName="active">
             <FaTachometerAlt className="me-2" />
             <span className="link-text">Dashboard</span>
-          </Link>
+          </NavLink>
         </li>
         <li className="nav-item mb-2">
-          <Link to="/admin/users" className="nav-link">
+          <NavLink to="/admin/users" className="nav-link" activeClassName="active">
             <FaUsers className="me-2" />
             <span className="link-text">Manage Users</span>
-          </Link>
+          </NavLink>
         </li>
         <li className="nav-item mb-2">
-          <Link to="/admin/assets" className="nav-link">
+          <NavLink to="/admin/assets" className="nav-link" activeClassName="active">
             <FaCube className="me-2" />
             <span className="link-text">Manage Assets</span>
-          </Link>
+          </NavLink>
         </li>
         <li className="nav-item mb-2">
-          <Link to="/admin/requests" className="nav-link">
+          <NavLink to="/admin/requests" className="nav-link" activeClassName="active">
             <FaEnvelope className="me-2" />
             <span className="link-text">Requests</span>
-          </Link>
+          </NavLink>
         </li>
-        <li className="nav-item mb-2">
-          <Link to="/admin/audit-logs" className="nav-link">
+        {/* <li className="nav-item mb-2">
+          <NavLink to="/admin/audit-logs" className="nav-link" activeClassName="active">
             <FaClipboardList className="me-2" />
             <span className="link-text">Audit Logs</span>
-          </Link>
-        </li>
+          </NavLink>
+        </li> */}
         <li className="nav-item mb-2">
-          <Link to="/admin/system-config" className="nav-link">
+          <NavLink to="/admin/system-config" className="nav-link" activeClassName="active">
             <FaCogs className="me-2" />
             <span className="link-text">System Config</span>
-          </Link>
+          </NavLink>
         </li>
-        <li className="nav-item mb-2">
-          <Link to="/admin/reports" className="nav-link">
+        {/* <li className="nav-item mb-2">
+          <NavLink to="/admin/reports" className="nav-link" activeClassName="active">
             <FaChartBar className="me-2" />
             <span className="link-text">Reports</span>
-          </Link>
-        </li>
+          </NavLink>
+        </li> */}
       </ul>
-      {/*
-      <div className="p-3 mt-auto">
-        <button onClick={() => {
-          dispatch(logout());
-          navigate('/login');
-        }} className="btn btn-danger w-100">
-          Logout
-        </button>
-      </div>
-      */}
     </div>
   );
 };

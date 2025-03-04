@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchRequests } from './api';
 import './api.css';
 
+
 const Requests = () => {
   const [requests, setRequests] = useState([]);
 
@@ -16,7 +17,7 @@ const Requests = () => {
 
   return (
     <div className="api-container">
-      <h1>Requests</h1>
+      <h1>Your Requests</h1>
       <div className="api-list">
         {requests.length === 0 ? (
           <p>No requests available.</p>
