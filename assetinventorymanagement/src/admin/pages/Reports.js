@@ -11,7 +11,7 @@ const Reports = () => {
 
   const handleExport = async (format, reportType) => {
     try {
-      const response = await axios.get('/assetinventorymanagement/reporting-export', {
+      const response = await axios.get('/https://assetinventorymanagement.onrender.com/user/reporting-export', {
         withCredentials: true,
         responseType: 'blob', // For file download
       });

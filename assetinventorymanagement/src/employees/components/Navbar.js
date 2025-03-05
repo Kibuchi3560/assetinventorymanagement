@@ -12,14 +12,14 @@ const Navbar = () => {
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
-      navigate('/'); // Proceed anyway
+      navigate('/');
     }
   };
 
   return (
     <nav>
-      <Link to="/Login">Login</Link>
-      <Link to="/Signup">Signup</Link>
+      <Link to="/login">Login</Link>
+      <Link to="/signup">Signup</Link>
       <button onClick={handleLogout} className="logout-button">Logout</button>
     </nav>
   );

@@ -1,26 +1,34 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './RequestForm.css';
 
-
-
 const RequestForm = () => {
-  const [employeeName, setEmployeeName] = useState('');
-  const [reason, setReason] = useState('');
-  const [urgency, setUrgency] = useState('Low');
-  const [quantity, setQuantity] = useState(1);
+  const [formData, setFormData] = useState({
+    reason: '',
+    urgency: 'Low',
+    quantity: 1,
+  });
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const requestData = {
-      employeeName,
-      reason,
-      urgency,
-      quantity,
-    };
-    console.log('Request Submitted:', requestData);
-
-    // handle the request submission, like sending it to an API, here
+    try {
+      const response = await axios.post('/requests', {
+        request_type: 'New Asset',
+        reason: formData.reason,
+        urgency: formData.urgency,
+        quantity: formData.quantity,
+      }, { withCredentials: true });
+      if (response.status === 201) {
+        alert('Request submitted!');
+      }
+    } catch (error) {
+      console.error('Error submitting request:', error);
+    }
   };
 
   return (
@@ -28,34 +36,24 @@ const RequestForm = () => {
       <h2>Employee Request Form</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="employee-name">Employee Name:</label>
-          <input
-            type="text"
-            id="employee-name"
-            value={employeeName}
-            onChange={(e) => setEmployeeName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
           <label htmlFor="reason">Reason for Request:</label>
           <textarea
             id="reason"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            name="reason"
+            value={formData.reason}
+            onChange={handleChange}
             rows="4"
             cols="50"
             required
           />
         </div>
-
         <div>
           <label htmlFor="urgency">Urgency:</label>
           <select
             id="urgency"
-            value={urgency}
-            onChange={(e) => setUrgency(e.target.value)}
+            name="urgency"
+            value={formData.urgency}
+            onChange={handleChange}
             required
           >
             <option value="Low">Low</option>
@@ -63,23 +61,19 @@ const RequestForm = () => {
             <option value="High">High</option>
           </select>
         </div>
-
         <div>
           <label htmlFor="quantity">Quantity:</label>
           <input
             type="number"
             id="quantity"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleChange}
             required
             min="1"
           />
         </div>
-
-        <div>
-          <button type="submit">Submit Request</button>
-
-        </div>
+        <button type="submit">Submit Request</button>
       </form>
     </div>
   );

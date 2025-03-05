@@ -9,7 +9,7 @@ import AllocationLogic from './manager/DataLogic/allocationLogic';
 import ApprovedRequestsPage from './manager/RequestManagement/ApproveRequestModal';
 import RejectedRequestsPage from './manager/RequestManagement/RejectRequestModal';
 import AllocationForm from './manager/AssetAllocation/AllocationForm';
-import AssetManagement from './manager/AssetManagement/AssetManagent'; // Fixed typo
+import AssetManagement from './manager/AssetManagement/AssetManagement'; // Fixed typo
 import AssetAllocationTable from './manager/AssetAllocation/AssetAllocationTable';
 import PendingRequestsTable from './manager/RequestManagement/ApproveRequestModal';
 import CompletedRequestsTable from './manager/RequestManagement/CompletedRequestsTable';
@@ -27,9 +27,10 @@ import Reports from './admin/pages/Reports';
 // Employee Components
 import EmployeeDashboard from './employees/components/EmployeeDashboard';
 import RequestForm from './employees/components/RequestForm';
-import RepairForm from './employees/components/RepairForm';
+import RepairForm from './employees/components/EmployeeRepairForm';
 import Requests from './employees/components/Requests';
 import Repairs from './employees/components/Repairs';
+import Assets from './employees/components/Assets'; // Added for consistency
 import Login from './employees/components/Login';
 import Signup from './employees/components/Signup';
 
@@ -44,13 +45,13 @@ const PrivateRoute = ({ element, roles }) => {
 
 function App() {
   const [allocations, setAllocations] = useState([]);
-  
+
   useEffect(() => {
     AllocationLogic.getAllocations()
       .then((data) => setAllocations(data || []))
       .catch((error) => console.error('Error fetching allocations:', error));
   }, []);
-  
+
   const handleAllocationSuccess = (newAllocation) => {
     setAllocations((prevAllocations) => [...prevAllocations, newAllocation]);
   };
@@ -59,73 +60,77 @@ function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
         {/* Employee Routes */}
-        <Route 
-          path="/employee/dashboard" 
-          element={<PrivateRoute element={<EmployeeDashboard />} roles={['Employee']} />} 
+        <Route
+          path="/employee/dashboard"
+          element={<PrivateRoute element={<EmployeeDashboard />} roles={['Employee']} />}
         />
-        <Route 
-          path="/requestform" 
-          element={<PrivateRoute element={<RequestForm />} roles={['Employee']} />} 
+        <Route
+          path="/requestform"
+          element={<PrivateRoute element={<RequestForm />} roles={['Employee']} />}
         />
-        <Route 
-          path="/repairform" 
-          element={<PrivateRoute element={<RepairForm />} roles={['Employee']} />} 
+        <Route
+          path="/repairform"
+          element={<PrivateRoute element={<RepairForm />} roles={['Employee']} />}
         />
-        <Route 
-          path="/requests" 
-          element={<PrivateRoute element={<Requests />} roles={['Employee']} />} 
+        <Route
+          path="/requests"
+          element={<PrivateRoute element={<Requests />} roles={['Employee']} />}
         />
-        <Route 
-          path="/repairs" 
-          element={<PrivateRoute element={<Repairs />} roles={['Employee']} />} 
+        <Route
+          path="/repairs"
+          element={<PrivateRoute element={<Repairs />} roles={['Employee']} />}
+        />
+        <Route
+          path="/assets"
+          element={<PrivateRoute element={<Assets />} roles={['Employee']} />}
         />
 
         {/* Manager Routes */}
-        <Route 
-          path="/manager/dashboard" 
+        <Route
+          path="/manager/dashboard"
+          element={<PrivateRoute element={<Dashboard />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/approved"
+          element={<PrivateRoute element={<ApprovedRequestsPage />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/rejected"
+          element={<PrivateRoute element={<RejectedRequestsPage />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/allocate-asset" // Corrected from "allocation-assert"
           element={
-            <PrivateRoute 
-              element={
-                <Dashboard 
-                  allocations={allocations} 
-                  onAllocationSuccess={handleAllocationSuccess} 
-                />
-              } 
-              roles={['Manager']} 
+            <PrivateRoute
+              element={<AllocationForm onAllocationSuccess={handleAllocationSuccess} />}
+              roles={['Manager']}
             />
-          } 
+          }
         />
-        <Route 
-          path="/manager/approved" 
-          element={<PrivateRoute element={<ApprovedRequestsPage />} roles={['Manager']} />} 
+        <Route
+          path="/manager/asset-allocated"
+          element={
+            <PrivateRoute
+              element={<AssetAllocationTable allocations={allocations} />}
+              roles={['Manager']}
+            />
+          }
         />
-        <Route 
-          path="/manager/rejected" 
-          element={<PrivateRoute element={<RejectedRequestsPage />} roles={['Manager']} />} 
+        <Route
+          path="/manager/manage-assets"
+          element={<PrivateRoute element={<AssetManagement />} roles={['Manager']} />}
         />
-        <Route 
-          path="/manager/allocation-assert" 
-          element={<PrivateRoute element={<AllocationForm />} roles={['Manager']} />} 
+        <Route
+          path="/manager/pending-requests"
+          element={<PrivateRoute element={<PendingRequestsTable />} roles={['Manager']} />}
         />
-        <Route 
-          path="/manager/asset-allocated" 
-          element={<PrivateRoute element={<AssetAllocationTable />} roles={['Manager']} />} 
-        />
-        <Route 
-          path="/manager/manage-assets" 
-          element={<PrivateRoute element={<AssetManagement />} roles={['Manager']} />} 
-        />
-        <Route 
-          path="/manager/pending-requests" 
-          element={<PrivateRoute element={<PendingRequestsTable />} roles={['Manager']} />} 
-        />
-        <Route 
-          path="/manager/completed-requests" 
-          element={<PrivateRoute element={<CompletedRequestsTable />} roles={['Manager']} />} 
+        <Route
+          path="/manager/completed-requests"
+          element={<PrivateRoute element={<CompletedRequestsTable />} roles={['Manager']} />}
         />
 
         {/* Admin Routes with Nested Layout */}

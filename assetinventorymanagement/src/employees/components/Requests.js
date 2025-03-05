@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { fetchRequests } from './api';
 import './api.css';
 
-
 const Requests = () => {
   const [requests, setRequests] = useState([]);
 
@@ -11,7 +10,6 @@ const Requests = () => {
       const requestsData = await fetchRequests();
       setRequests(requestsData);
     };
-
     fetchData();
   }, []);
 
@@ -24,9 +22,9 @@ const Requests = () => {
         ) : (
           requests.map((request) => (
             <div className="api-item" key={request.id}>
-              <p><strong>Description:</strong> {request.description}</p>
+              <p><strong>Reason:</strong> {request.reason}</p>
               <p><strong>Status:</strong> <span className="status">{request.status}</span></p>
-              <p className="date"><strong>Date:</strong> {request.date}</p>
+              <p className="date"><strong>Date:</strong> {request.request_date}</p>
             </div>
           ))
         )}

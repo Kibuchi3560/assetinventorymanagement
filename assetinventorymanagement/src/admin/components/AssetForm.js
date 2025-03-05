@@ -15,11 +15,11 @@ const AssetForm = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('/assetinventorymanagement/categories', { withCredentials: true })
+    axios.get('/https://assetinventorymanagement.onrender.com/user/categories', { withCredentials: true })
       .then((response) => setCategories(response.data))
       .catch((error) => console.error('Error fetching categories:', error));
 
-    axios.get('/assetinventorymanagement/departments', { withCredentials: true })
+    axios.get('/https://assetinventorymanagement.onrender.com/user/departments', { withCredentials: true })
       .then((response) => setDepartments(response.data))
       .catch((error) => console.error('Error fetching departments:', error));
   }, []);

@@ -22,8 +22,8 @@ const Assets = () => {
         ) : (
           assets.map((asset) => (
             <div className="api-item" key={asset.id}>
-              <p><strong>Asset Name:</strong> {asset.name}</p> {/* Changed from assetName */}
-              <p><strong>Allocation Date:</strong> {asset.allocationDate}</p>
+              <p><strong>Asset Name:</strong> {asset.name}</p>
+              <p><strong>Allocation Date:</strong> {asset.allocation_date}</p>
               <p><strong>Status:</strong> <span className="status">{asset.status}</span></p>
             </div>
           ))

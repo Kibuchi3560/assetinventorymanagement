@@ -3,9 +3,9 @@ import React from "react";
 const RequestCard = ({ request }) => {
   return (
     <div style={styles.card}>
-      <h3>{request.reason}</h3> {/* Changed from description */}
+      <h3>{request.reason}</h3>
       <p>Status: {request.status}</p>
-      <p>Requested on: {request.request_date}</p> {/* Changed from date */}
+      <p>Requested on: {request.request_date}</p>
     </div>
   );
 };

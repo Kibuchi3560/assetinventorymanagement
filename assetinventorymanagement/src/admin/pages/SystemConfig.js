@@ -12,7 +12,7 @@ const SystemConfig = () => {
   // Fetch categories and departments from the backend on component mount
   useEffect(() => {
     axios
-      .get('/assetinventorymanagement/categories', { withCredentials: true })
+      .get('/https://assetinventorymanagement.onrender.com/user/categories', { withCredentials: true })
       .then((response) => {
         setCategories(response.data);
       })
@@ -21,7 +21,7 @@ const SystemConfig = () => {
       });
 
     axios
-      .get('/assetinventorymanagement/departments', { withCredentials: true })
+      .get('/https://assetinventorymanagement.onrender.com/user/departments', { withCredentials: true })
       .then((response) => {
         setDepartments(response.data);
       })
@@ -36,7 +36,7 @@ const SystemConfig = () => {
     if (newCategory.trim()) {
       axios
         .post(
-          '/assetinventorymanagement/categories',
+          '/https://assetinventorymanagement.onrender.com/user/categories',
           { name: newCategory },
           { withCredentials: true }
         )
@@ -57,7 +57,7 @@ const SystemConfig = () => {
     if (newDepartment.trim()) {
       axios
         .post(
-          '/assetinventorymanagement/departments',
+          '/https://assetinventorymanagement.onrender.com/user/departments',
           { name: newDepartment },
           { withCredentials: true }
         )

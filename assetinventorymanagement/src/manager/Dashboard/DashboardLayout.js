@@ -1,72 +1,75 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBox, faInbox, faCheckCircle, faExclamationTriangle, faWrench } from "@fortawesome/free-solid-svg-icons";
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Mock Data
-const pendingRequests = [
-  { id: 1, request_type: "Laptop", reason: "Replacement needed", quantity: 2, urgency: "High" },
-  { id: 2, request_type: "Server", reason: "Failure", quantity: 1, urgency: "High" },
-  { id: 3, request_type: "Office Chairs", reason: "Broken", quantity: 10, urgency: "Medium" },
-];
-
-// Commented out for API integration
-// useEffect(() => {
-//   fetch("/api/pending-requests")
-//     .then(response => response.json())
-//     .then(data => setPendingRequests(data))
-//     .catch(error => console.error("Error fetching requests:", error));
-// }, []);
-
-const data = [
-  { name: "Electronics", assets: 50, requests: 20 },
-  { name: "Furniture", assets: 80, requests: 30 },
-  { name: "Detergents", assets: 60, requests: 25 },
-  { name: "Vehicles", assets: 100, requests: 40 },
-];
-
-const stats = [
-  { name: <><FontAwesomeIcon icon={faBox} size="2x" style={{ color: "darkblue" }} className="me-2" /> Total Assets</>, value: 200 },
-  { name: <><FontAwesomeIcon icon={faInbox} size="2x" className="me-2" /> Pending Requests</>, value: 10 },
-  { name: <><FontAwesomeIcon icon={faCheckCircle} size="2x" className="text-success me-2" /> Approved Requests</>, value: 30 },
-  { name: <><FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-danger me-2" /> Rejected Requests</>, value: 5 },
-  { name: <><FontAwesomeIcon icon={faWrench} size="2x" className="me-2" /> Completed Requests</>, value: 50 },
-];
-
-// Filter High Urgency Requests
-const highUrgencyRequests = pendingRequests.filter(req => req.urgency === "High");
-
-const criticalAlerts = [
-  { id: 1, message: "Urgent: Laptop replacement needed", level: "High" },
-  { id: 2, message: "Server failure - Immediate action required", level: "High" },
-];
-
 const Dashboard = () => {
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [data, setData] = useState([]);
+  const [stats, setStats] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const requestsResponse = await axios.get('/requests', { withCredentials: true });
+        setPendingRequests(requestsResponse.data.filter(req => req.status === 'Pending') || []);
+
+        const assetsResponse = await axios.get('/assets', { withCredentials: true });
+        const assets = assetsResponse.data || [];
+        setData([
+          { name: "Electronics", assets: assets.filter(a => a.category === 'Electronics').length, requests: requestsResponse.data.filter(r => r.asset_category === 'Electronics').length },
+          { name: "Furniture", assets: assets.filter(a => a.category === 'Furniture').length, requests: requestsResponse.data.filter(r => r.asset_category === 'Furniture').length },
+          { name: "Detergents", assets: assets.filter(a => a.category === 'Detergents').length, requests: requestsResponse.data.filter(r => r.asset_category === 'Detergents').length },
+          { name: "Vehicles", assets: assets.filter(a => a.category === 'Vehicles').length, requests: requestsResponse.data.filter(r => r.asset_category === 'Vehicles').length },
+        ]);
+
+        setStats([
+          { name: <><FontAwesomeIcon icon={faBox} size="2x" style={{ color: "darkblue" }} className="me-2" /> Total Assets</>, value: assets.length },
+          { name: <><FontAwesomeIcon icon={faInbox} size="2x" className="me-2" /> Pending Requests</>, value: requestsResponse.data.filter(r => r.status === 'Pending').length },
+          { name: <><FontAwesomeIcon icon={faCheckCircle} size="2x" className="text-success me-2" /> Approved Requests</>, value: requestsResponse.data.filter(r => r.status === 'Approved').length },
+          { name: <><FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-danger me-2" /> Rejected Requests</>, value: requestsResponse.data.filter(r => r.status === 'Rejected').length },
+          { name: <><FontAwesomeIcon icon={faWrench} size="2x" className="me-2" /> Completed Requests</>, value: requestsResponse.data.filter(r => r.status === 'Completed').length },
+        ]);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const highUrgencyRequests = pendingRequests.filter(req => req.urgency === 'High');
+  const criticalAlerts = highUrgencyRequests.map(req => ({
+    id: req.id,
+    message: `Urgent: ${req.request_type} - ${req.reason}`,
+    level: 'High',
+  }));
 
   return (
     <div className="container py-4">
       <h1 className="text-center mb-4">Manager Dashboard</h1>
       
-      <div className="alert alert-danger">
-        <h4>Critical Alerts</h4>
-        <ul>
-          {criticalAlerts.map(alert => (
-            <li key={alert.id}><strong>{alert.message} ({alert.level})</strong></li>
-          ))}
-        </ul>
-      </div>
+      {criticalAlerts.length > 0 && (
+        <div className="alert alert-danger">
+          <h4>Critical Alerts</h4>
+          <ul>
+            {criticalAlerts.map(alert => (
+              <li key={alert.id}><strong>{alert.message} ({alert.level})</strong></li>
+            ))}
+          </ul>
+        </div>
+      )}
       
       <div className="row g-2 mb-3">
         {stats.map((stat, index) => (
-          <div key={index} className="col-md-4"> 
-            <div className="card p-3"> 
+          <div key={index} className="col-md-4">
+            <div className="card p-3">
               <h5>{stat.name}</h5>
               <h3>{stat.value}</h3>
             </div>
@@ -74,9 +77,7 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Priority Requests + Buttons */}
       <div className="row mb-3">
-        {/* Priority Requests Section - Half Page */}
         <div className="col-md-6">
           <div className="card p-3">
             <h4 className="text-danger">Priority Requests (High Urgency)</h4>
@@ -99,12 +100,8 @@ const Dashboard = () => {
                       <td>{request.reason}</td>
                       <td>{request.quantity}</td>
                       <td>
-                        <button className="btn btn-success btn-sm me-2" onClick={() => navigate("/approved")}>
-                          Approve
-                        </button>
-                        <button className="btn btn-danger btn-sm" onClick={() => navigate("/rejected")}>
-                          Reject
-                        </button>
+                        <button className="btn btn-success btn-sm me-2" onClick={() => navigate("/manager/approved")}>Approve</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => navigate("/manager/rejected")}>Reject</button>
                       </td>
                     </tr>
                   ))}
@@ -114,24 +111,14 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Buttons Section - Aligned Next to Priority Requests */}
         <div className="col-md-6 d-flex flex-column justify-content-between">
-          <button className="btn text-black mb-3" style={{ backgroundColor: "blue" }} onClick={() => navigate("/manage-assets")}>
-            View Assets
-          </button>
-          <button className="btn text-black mb-3" style={{ backgroundColor: "green" }} onClick={() => navigate("/allocation-assert")}>
-            Allocate Assets
-          </button>
-          <button className="btn text-black mb-3" style={{ backgroundColor: "aqua" }} onClick={() => navigate("/rejected")}>
-            Approve/Reject Requests
-          </button>
-          <button className="btn text-black" style={{ backgroundColor: "darkgoldenrod" }} onClick={() => navigate("/completed-requests")}>
-            Completed Requests
-          </button>
+          <button className="btn text-black mb-3" style={{ backgroundColor: "blue" }} onClick={() => navigate("/manager/manage-assets")}>View Assets</button>
+          <button className="btn text-black mb-3" style={{ backgroundColor: "green" }} onClick={() => navigate("/manager/allocation-assert")}>Allocate Assets</button>
+          <button className="btn text-black mb-3" style={{ backgroundColor: "aqua" }} onClick={() => navigate("/manager/rejected")}>Approve/Reject Requests</button>
+          <button className="btn text-black" style={{ backgroundColor: "darkgoldenrod" }} onClick={() => navigate("/manager/completed-requests")}>Completed Requests</button>
         </div>
       </div>
 
-      {/* Charts Section */}
       <div className="row g-2 mb-3">
         <div className="card p-3 col">
           <h2 className="h5">Asset Growth</h2>
@@ -146,7 +133,6 @@ const Dashboard = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        
         <div className="card p-3 col">
           <h2 className="h5">Requests Overview</h2>
           <ResponsiveContainer width="100%" height={200}>
@@ -161,11 +147,10 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       </div>
-      
-      {/* Bottom Buttons */}
+
       <div className="row g-2 mb-3">
-        <button className="btn btn-light col" onClick={() => navigate("/pending-requests")}>New Requests</button>
-        <button className="btn btn-light col" onClick={() => navigate("/approved")}>Approval Reminders</button>
+        <button className="btn btn-light col" onClick={() => navigate("/manager/pending-requests")}>New Requests</button>
+        <button className="btn btn-light col" onClick={() => navigate("/manager/approved")}>Approval Reminders</button>
       </div>
     </div>
   );
