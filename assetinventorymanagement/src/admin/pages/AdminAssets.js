@@ -1,17 +1,23 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
-import AssetForm from '../components/AssetForm';
+import { fetchAssets, deleteAsset } from '../redux/assetsSlice';
 
 const AdminAssets = () => {
-  const assets = useSelector(state => state.assets.items || []);
+  const dispatch = useDispatch();
+  const assets = useSelector((state) => state.assets.items);
+
+  useEffect(() => {
+    dispatch(fetchAssets());
+  }, [dispatch]);
+
+  const handleDecommission = (id) => {
+    dispatch(deleteAsset(id));
+  };
 
   return (
     <div className="container my-4">
-      <h1>Manage Assets</h1>
-      <p>Add new assets, update existing assets, and assign assets to departments.</p>
-      <AssetForm />
-      <h3 className="mt-4">Asset List</h3>
+      <h1>List Assets</h1>
       <Table striped hover>
         <thead>
           <tr>
@@ -24,7 +30,7 @@ const AdminAssets = () => {
           </tr>
         </thead>
         <tbody>
-          {assets.map(asset => (
+          {assets.map((asset) => (
             <tr key={asset.id}>
               <td>{asset.id}</td>
               <td>{asset.name}</td>
@@ -33,7 +39,7 @@ const AdminAssets = () => {
               <td>{asset.assignedTo || 'Unassigned'}</td>
               <td>
                 <Button variant="outline-primary" size="sm" className="me-2">Edit</Button>
-                <Button variant="outline-danger" size="sm">Decommission</Button>
+                <Button variant="outline-danger" size="sm" onClick={() => handleDecommission(asset.id)}>Decommission</Button>
               </td>
             </tr>
           ))}

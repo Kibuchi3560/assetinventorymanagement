@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, ProgressBar, Row, Col } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend } from 'chart.js';
-import 'chartjs-adapter-date-fns'; // For date handling in Chart.js
+import 'chartjs-adapter-date-fns';
 
 // Register Chart.js components
 ChartJS.register(LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend);
@@ -19,12 +19,12 @@ const FinancialInsights = ({ assets }) => {
 
   // Simulate monthly expense trends (mock data)
   const monthlyData = {
-    labels: ['2025-01', '2025-02', '2025-03', '2025-04', '2025-05', '2025-06'], // Mock months
+    labels: ['2025-01', '2025-02', '2025-03', '2025-04', '2025-05', '2025-06'],
     datasets: [
       {
         label: 'New Assets',
         data: assets.reduce((acc, asset) => {
-          const month = asset.purchaseDate.slice(0, 7); // Extract YYYY-MM
+          const month = asset.purchaseDate.slice(0, 7);
           acc[month] = (acc[month] || 0) + (asset.cost || 0);
           return acc;
         }, {}),
@@ -40,7 +40,7 @@ const FinancialInsights = ({ assets }) => {
           '2025-04': 200,
           '2025-05': 600,
           '2025-06': 350,
-        }, // Mock repair costs
+        },
         borderColor: 'rgba(255, 99, 132, 1)',
         fill: false,
       },
@@ -79,8 +79,6 @@ const FinancialInsights = ({ assets }) => {
     <Card>
       <Card.Body>
         <Card.Title>Financial Insights</Card.Title>
-        
-        {/* Budget Utilization */}
         <h6>Budget Utilization</h6>
         {budgetUtilization.map((dep, i) => (
           <div key={i} className="mb-3">
@@ -88,16 +86,12 @@ const FinancialInsights = ({ assets }) => {
             <ProgressBar now={(dep.used / dep.total) * 100} variant="success" />
           </div>
         ))}
-
-        {/* Top 5 Expensive Assets */}
         <h6 className="mt-4">Top 5 Expensive Assets</h6>
         <ul>
           {topExpensive.map(a => (
             <li key={a.id}>{a.name} - ${a.cost}</li>
           ))}
         </ul>
-
-        {/* Line Graph: Monthly Expense Trends */}
         <h6 className="mt-4">Monthly Expense Trends</h6>
         <div style={{ height: '300px' }}>
           <Line data={chartData} options={options} />

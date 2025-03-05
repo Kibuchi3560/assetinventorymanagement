@@ -1,27 +1,34 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './RepairForm.css';
 
 const EmployeeRepairForm = () => {
   const [formData, setFormData] = useState({
-    employeeName: '',
-    department: 'Technical Mentor',  // Default option set to "Technical Mentor"
+    asset_id: '',
     issueDescription: '',
     priority: 'Low',
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Repair Request Submitted:', formData);
-    // Handle form submission (e.g., save to database, send to an API)
-    alert('Repair request submitted!');
+    try {
+      const response = await axios.post('/requests', {
+        asset_id: formData.asset_id,
+        request_type: 'Repair',
+        reason: formData.issueDescription,
+        urgency: formData.priority,
+      }, { withCredentials: true });
+      if (response.status === 201) {
+        alert('Repair request submitted!');
+      }
+    } catch (error) {
+      console.error('Error submitting repair request:', error);
+    }
   };
 
   return (
@@ -29,31 +36,16 @@ const EmployeeRepairForm = () => {
       <h2>Employee Repair Request Form</h2>
       <form onSubmit={handleSubmit} className="repair-form">
         <div className="form-group">
-          <label htmlFor="employeeName">Employee Name:</label>
+          <label htmlFor="asset_id">Asset ID:</label>
           <input
             type="text"
-            id="employeeName"
-            name="employeeName"
-            value={formData.employeeName}
+            id="asset_id"
+            name="asset_id"
+            value={formData.asset_id}
             onChange={handleChange}
             required
           />
         </div>
-
-        <div className="form-group">
-          <label htmlFor="department">Department:</label>
-          <select
-            id="department"
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-          >
-            <option value="Technical Mentor">Technical Mentor</option>
-            <option value="Guards">Guards</option>
-            <option value="Janitor">Janitor</option>
-          </select>
-        </div>
-
         <div className="form-group">
           <label htmlFor="issueDescription">Issue Description:</label>
           <textarea
@@ -64,7 +56,6 @@ const EmployeeRepairForm = () => {
             required
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="priority">Priority Level:</label>
           <select
@@ -78,7 +69,6 @@ const EmployeeRepairForm = () => {
             <option value="High">High</option>
           </select>
         </div>
-
         <button type="submit" className="submit-btn">Submit Repair Request</button>
       </form>
     </div>

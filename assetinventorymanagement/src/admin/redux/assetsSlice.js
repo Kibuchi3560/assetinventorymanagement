@@ -1,44 +1,46 @@
-// src/redux/assetsSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { mockAssets } from '../mocks/data';
+import axios from 'axios';
 
-// Keep the async thunk
+export const fetchAssets = createAsyncThunk('assets/fetchAssets', async () => {
+  const response = await axios.get('/assets', { withCredentials: true });
+  return response.data;
+});
+
 export const addAsset = createAsyncThunk('assets/addAsset', async (assetData) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ ...assetData, id: Date.now() });
-    }, 500);
-  });
+  const response = await axios.post('/assets', assetData, { withCredentials: true });
+  return response.data.asset;
+});
+
+export const updateAsset = createAsyncThunk('assets/updateAsset', async (assetData) => {
+  const response = await axios.put(`/assets/${assetData.id}`, assetData, { withCredentials: true });
+  return response.data.asset;
+});
+
+export const deleteAsset = createAsyncThunk('assets/deleteAsset', async (id) => {
+  await axios.delete(`/assets/${id}`, { withCredentials: true });
+  return id;
 });
 
 const assetsSlice = createSlice({
   name: 'assets',
-  initialState: {
-    items: mockAssets,
-    status: 'idle',
-    error: null
-  },
-  reducers: {
-    updateAsset: (state, action) => {
-      const index = state.items.findIndex(a => a.id === action.payload.id);
-      if (index >= 0) state.items[index] = action.payload;
-    },
-    deleteAsset: (state, action) => {
-      state.items = state.items.filter(a => a.id !== action.payload);
-    }
-  },
+  initialState: { items: [], status: 'idle', error: null },
   extraReducers: (builder) => {
     builder
-      .addCase(addAsset.pending, (state) => {
-        state.status = 'loading';
+      .addCase(fetchAssets.fulfilled, (state, action) => {
+        state.items = action.payload;
+        state.status = 'succeeded';
       })
       .addCase(addAsset.fulfilled, (state, action) => {
-        state.status = 'succeeded';
         state.items.push(action.payload);
+      })
+      .addCase(updateAsset.fulfilled, (state, action) => {
+        const index = state.items.findIndex((a) => a.id === action.payload.id);
+        if (index >= 0) state.items[index] = action.payload;
+      })
+      .addCase(deleteAsset.fulfilled, (state, action) => {
+        state.items = state.items.filter((a) => a.id !== action.payload);
       });
-  }
+  },
 });
 
-// Only export synchronous actions
-export const { updateAsset, deleteAsset } = assetsSlice.actions;
 export default assetsSlice.reducer;

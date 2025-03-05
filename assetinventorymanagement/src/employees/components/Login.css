@@ -1,123 +1,49 @@
-/* Global Styles */
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #1a72ca;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  color: #1850eb;
+.login-container {
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  width: 500px;
+  max-width: 1000px;
+  height: 600px;
+  margin: auto;
+  font-family: Arial, sans-serif;
 }
 
-/* Login Container */
-.login {
-  max-width: 450px;
-  width: 100%;
-  background-color: #ffffff;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+.login-container form {
+  padding: 10px;
+  align-items: left;
+  height: 400px;
+  width: 400px;
+  max-width: 800px;
+}
+
+.login-container h2 {
+  margin-bottom: 10px;
+  font-size: 30px;
+  padding: 10px;
   text-align: center;
 }
 
-h2 {
-  font-size: 24px;
-  color: #4CAF50;
-  margin-bottom: 20px;
-}
-
-/* Form Styling */
-.loginForm {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.formGroup {
-  text-align: left;
-}
-
-/* Labels */
-.label {
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 5px;
-  display: block;
-}
-
-/* Input Fields */
-.loginInput,
-.form-select {
+.login-container input[type="text"],
+.login-container input[type="password"] {
   width: 100%;
-  padding: 10px;
-  font-size: 16px;
+  padding: 20px;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f8f8f8;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
-.loginInput:focus,
-.form-select:focus {
-  border-color: #4CAF50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
-  outline: none;
-}
-
-/* Role Selection Dropdown */
-.form-select {
-  appearance: none;
-  background-color: white;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.form-select:hover {
-  border-color: #4CAF50;
-}
-
-/* Login Button */
-.loginButton {
+.login-container button {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  background-color: hsl(229, 79%, 48%);
+  padding: 10px;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.loginButton:hover {
-  background-color: #388e3c;
-  transform: translateY(-2px);
-}
-
-.loginButton:active {
-  background-color: #2739da;
-  transform: translateY(2px);
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-  .login {
-    padding: 20px;
-  }
-
-  .loginInput,
-  .form-select {
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .loginButton {
-    font-size: 14px;
-    padding: 10px;
-  }
+.login-container button:hover {
+  background-color: #45a049;
 }

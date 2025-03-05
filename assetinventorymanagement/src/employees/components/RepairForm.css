@@ -1,12 +1,11 @@
 /* Global styles */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f4f7fa;
+  background-color: hsl(207, 65%, 97%);
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100vw;
   height: 100vh;
   color: #333;
 }
@@ -24,15 +23,15 @@ h2 {
 
 /* Employee Repair Form Styles */
 .repair-form-container {
-  width: 100%;
-  max-width: 520px;
+  width: 800px;
+  max-width: 1000px;
   margin: 20px auto;
   padding: 35px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 /* Hover effect for form container */
@@ -45,7 +44,7 @@ h2 {
 .repair-form {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 15px;
 }
 
 /* Form groups */
@@ -149,4 +148,3 @@ button.submit-btn:disabled {
     padding: 12px;
   }
 }
-

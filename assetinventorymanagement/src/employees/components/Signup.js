@@ -1,128 +1,101 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Signup.css';
-import { Link, useNavigate } from 'react-router-dom';
 
-function Signup() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+const SignupPage = () => {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    role: 'Employee',
+    password: '',
+    confirmPassword: '',
+    showPassword: false,
+  });
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setForm({ ...form, showPassword: !form.showPassword });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters long.");
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
-
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    setLoading(true);
-
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/signup`, { name, email, password });
-      console.log(response.data);
-      alert("Signup successful! Redirecting...");
-      navigate('/dashboard');
+      const response = await axios.post('/users', {
+        username: form.name,
+        email: form.email,
+        role: form.role,
+        password: form.password,
+        department: 'Default', // Add department field if required by backend
+      }, { withCredentials: true });
+      if (response.status === 201) {
+        alert('Signup successful!');
+      }
     } catch (error) {
-      console.error(error.response?.data);
-      alert(error.response?.data?.message || "Signup failed! Please try again.");
-    } finally {
-      setLoading(false);
+      setError('Signup failed');
+      console.error('Signup failed:', error);
     }
   };
 
   return (
     <div className="signup-container">
-      <h1>Signup</h1>
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
-        {/* Name Field */}
-        <div className="form-group">
-          <label>Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            autoComplete="name"
-          />
-        </div>
-
-        {/* Email Field */}
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
-        </div>
-
-        {/* Password Field */}
-        <div className="form-group relative">
-          <label>Password:</label>
-          <div className="password-container">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-              minLength="6"
-            />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? '🙈' : '👁'}
-            </button>
-          </div>
-        </div>
-
-        {/* Confirm Password Field */}
-        <div className="form-group relative">
-          <label>Confirm Password:</label>
-          <div className="password-container">
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? '🙈' : '👁'}
-            </button>
-          </div>
-        </div>
-
-        {/* Signup Button */}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Signing Up...' : 'Signup'}
-        </button>
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+        <select name="role" value={form.role} onChange={handleChange} required>
+          <option value="Admin">Admin</option>
+          <option value="Manager">Manager</option>
+          <option value="Employee">Employee</option>
+        </select>
+        <input
+          type={form.showPassword ? "text" : "password"}
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type={form.showPassword ? "text" : "password"}
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          value={form.confirmPassword}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="checkbox"
+          checked={form.showPassword}
+          onChange={togglePasswordVisibility}
+        /> Show Password
+        <button type="submit">Sign Up</button>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
-
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
     </div>
   );
-}
+};
 
-export default Signup;
+export default SignupPage;

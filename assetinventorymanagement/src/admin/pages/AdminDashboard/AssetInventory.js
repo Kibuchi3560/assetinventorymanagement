@@ -44,7 +44,6 @@ const AssetInventory = ({ assets }) => {
             <th>Status</th>
             <th>Assigned To</th>
             <th>Purchase Date</th>
-            <th>Warranty Expiry</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -57,7 +56,6 @@ const AssetInventory = ({ assets }) => {
               <td>{asset.status}</td>
               <td>{asset.assignedTo || 'Unassigned'}</td>
               <td>{asset.purchaseDate}</td>
-              <td>{asset.warrantyExpiry}</td>
               <td>
                 <Button variant="outline-primary" size="sm" onClick={() => handleEdit(asset.id)} className="me-2">Edit</Button>
                 <Button variant="outline-danger" size="sm" onClick={() => handleDecommission(asset.id)} className="me-2">Decommission</Button>

@@ -1,13 +1,11 @@
-// /components/RequestCard.js
-
 import React from "react";
 
 const RequestCard = ({ request }) => {
   return (
     <div style={styles.card}>
-      <h3>{request.description}</h3>
+      <h3>{request.reason}</h3>
       <p>Status: {request.status}</p>
-      <p>Requested on: {request.date}</p>
+      <p>Requested on: {request.request_date}</p>
     </div>
   );
 };

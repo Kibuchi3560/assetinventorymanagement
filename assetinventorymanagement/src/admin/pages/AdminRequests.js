@@ -1,25 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Button, Form } from 'react-bootstrap';
-import { updateRequest } from '../redux/requestsSlice';
-// import { updateRequest } from '../../redux/requestsSlice';
+import { fetchRequests, updateRequest } from '../redux/requestsSlice';
 
 const AdminRequests = () => {
   const dispatch = useDispatch();
-  const requests = useSelector(state => state.requests.items || []);
-  const users = useSelector(state => state.users.items || []);
-  const assets = useSelector(state => state.assets.items || []);
+  const requests = useSelector((state) => state.requests.items);
   const [filterStatus, setFilterStatus] = useState('');
 
-  const enhancedRequests = requests.map(request => ({
-    ...request,
-    userName: users.find(u => u.id === request.userId)?.name || 'Unknown',
-    assetName: request.assetId ? assets.find(a => a.id === request.assetId)?.name : 'New Asset Request',
-  }));
+  useEffect(() => {
+    dispatch(fetchRequests());
+  }, [dispatch]);
 
-  const filteredRequests = filterStatus
-    ? enhancedRequests.filter(r => r.status === filterStatus)
-    : enhancedRequests;
+  const filteredRequests = filterStatus ? requests.filter((r) => r.status === filterStatus) : requests;
 
   const handleAction = (requestId, status) => {
     dispatch(updateRequest({ id: requestId, status }));
@@ -35,9 +28,9 @@ const AdminRequests = () => {
         className="mb-3"
       >
         <option value="">All Statuses</option>
-        <option value="pending">Pending</option>
-        <option value="approved">Approved</option>
-        <option value="rejected">Rejected</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
       </Form.Select>
       <Table striped hover>
         <thead>
@@ -52,20 +45,33 @@ const AdminRequests = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredRequests.map(request => (
+          {filteredRequests.map((request) => (
             <tr key={request.id}>
               <td>{request.id}</td>
-              <td>{request.userName}</td>
-              <td>{request.assetName}</td>
-              <td>{request.type}</td>
+              <td>{request.user}</td>
+              <td>{request.asset}</td>
+              <td>{request.request_type}</td>
               <td>{request.urgency}</td>
               <td>{request.status}</td>
               <td>
-                {request.status === 'pending' && (
+                {request.status === 'Pending' && (
                   <>
-                    <Button variant="outline-success" size="sm" onClick={() => handleAction(request.id, 'approved')} className="me-2">Approve</Button>
-                    <Button variant="outline-danger" size="sm" onClick={() => handleAction(request.id, 'rejected')} className="me-2">Reject</Button>
-                    <Button variant="outline-info" size="sm" onClick={() => console.log(`Reassign ${request.id}`)}>Reassign</Button>
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => handleAction(request.id, 'Approved')}
+                      className="me-2"
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleAction(request.id, 'Rejected')}
+                      className="me-2"
+                    >
+                      Reject
+                    </Button>
                   </>
                 )}
               </td>

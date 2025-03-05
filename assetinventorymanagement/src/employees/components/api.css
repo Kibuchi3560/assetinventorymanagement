@@ -1,125 +1,127 @@
 /* General Styling for All Pages */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
+.api-container {
+  width: 900px;
+  height: 100vh;
+  max-width: 1000px;
+  margin: 20px;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Heading */
+.api-container h1 {
+  font-size: 32px;
+  color: #0a84f0;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* List of Items */
+.api-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Individual Item in the List */
+.api-item {
+  background-color: #f9f9f9;
+  padding: 20px;
+  margin: 15px 0;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Hover Effect for Each Item */
+.api-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Styling for each individual data point (e.g., Asset, Status) */
+.api-item p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+/* Strong elements to highlight labels */
+.api-item p strong {
+  color: #007bff;
+  font-size: larger;
+  font-weight: bold;
+}
+
+/* Status (color coding) */
+.status {
+  font-weight: bold;
+  color: #0eb4dd;
+}
+
+/* Date Style */
+.date {
+  color: #888;
+  font-size: 14px;
+}
+
+/* Empty State (when no data is available) */
+.api-item p.no-data {
+  color: #aaa;
+  font-size: 18px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .api-container {
-    width: 100%;
-    max-width: 1000px;
-    margin: 20px;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  /* Heading */
-  .api-container h1 {
-    font-size: 32px;
-    color: #1e3d58;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  /* List of Items */
-  .api-list {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* Individual Item in the List */
-  .api-item {
-    background-color: #f9f9f9;
-    padding: 20px;
-    margin: 15px 0;
-    width: 100%;
-    max-width: 900px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  }
-
-  /* Hover Effect for Each Item */
-  .api-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Styling for each individual data point (e.g., Asset, Status) */
-  .api-item p {
-    font-size: 16px;
-    margin: 8px 0;
-  }
-
-  /* Strong elements to highlight labels */
-  .api-item p strong {
-    color: #007bff;
-    font-weight: bold;
-  }
-
-  /* Status (color coding) */
-  .status {
-    font-weight: bold;
-    color: #007bff;
-  }
-
-  /* Date Style */
-  .date {
-    color: #888;
-    font-size: 14px;
-  }
-
-  /* Empty State (when no data is available) */
-  .api-item p.no-data {
-    color: #aaa;
-    font-size: 18px;
-    text-align: center;
-  }
-
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .api-container {
       padding: 20px;
       max-width: 90%;
-    }
+  }
 
-    .api-container h1 {
+  .api-container h1 {
       font-size: 28px;
-    }
+  }
 
-    .api-item p {
+  .api-item p {
       font-size: 14px;
-    }
+  }
+}
+
+@media (max-width: 480px) {
+  .api-container {
+      padding: 15px;
   }
 
-  @media (max-width: 480px) {
-    .api-container {
-      padding: 15px;
-    }
-
-    .api-container h1 {
+  .api-container h1 {
       font-size: 24px;
-    }
-
-    .api-item {
-      padding: 15px;
-    }
-
-    .api-item p {
-      font-size: 12px;
-    }
   }
+
+  .api-item {
+      padding: 15px;
+  }
+
+  .api-item p {
+      font-size: 12px;
+  }
+}

@@ -1,37 +1,29 @@
-// src/redux/usersSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { mockUsers } from '../mocks/data';
+import axios from 'axios';
 
-// Keep the async thunk
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+  const response = await axios.get('/users', { withCredentials: true });
+  return response.data;
+});
+
 export const addUser = createAsyncThunk('users/addUser', async (userData) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ ...userData, id: Date.now() });
-    }, 500);
-  });
+  const response = await axios.post('/users', userData, { withCredentials: true });
+  return response.data.user;
 });
 
 const usersSlice = createSlice({
   name: 'users',
-  initialState: {
-    items: mockUsers,
-    status: 'idle',
-    error: null
-  },
-  reducers: {
-    updateUser: (state, action) => {
-      const index = state.items.findIndex(u => u.id === action.payload.id);
-      if (index >= 0) state.items[index] = action.payload;
-    }
-  },
+  initialState: { items: [], status: 'idle', error: null },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.items = action.payload;
+        state.status = 'succeeded';
+      })
       .addCase(addUser.fulfilled, (state, action) => {
         state.items.push(action.payload);
       });
-  }
+  },
 });
 
-// Only export synchronous actions
-export const { updateUser } = usersSlice.actions;
 export default usersSlice.reducer;

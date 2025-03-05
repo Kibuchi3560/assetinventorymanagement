@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Form } from 'react-bootstrap';
+import axios from 'axios';
 
 const AuditLogs = () => {
   const [search, setSearch] = useState('');
-  const mockLogs = [
-    { id: 1, timestamp: '2025-02-22 10:00', action: 'User X assigned Asset Y to Z' },
-    { id: 2, timestamp: '2025-02-22 11:00', action: 'User A approved request #123' },
-    { id: 3, timestamp: '2025-02-22 12:00', action: 'User B rejected request #456' },
-  ];
+  const [logs, setLogs] = useState([]);
 
-  const filteredLogs = mockLogs.filter(log =>
-    log.action.toLowerCase().includes(search.toLowerCase()) ||
-    log.timestamp.includes(search)
+  useEffect(() => {
+    axios.get('/assetinventorymanagement/activity-log', { withCredentials: true })
+      .then((response) => setLogs(response.data))
+      .catch((error) => console.error('Error fetching logs:', error));
+  }, []);
+
+  const filteredLogs = logs.filter(
+    (log) =>
+      log.action.toLowerCase().includes(search.toLowerCase()) ||
+      log.timestamp.includes(search)
   );
 
   return (
@@ -34,7 +38,7 @@ const AuditLogs = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredLogs.map(log => (
+          {filteredLogs.map((log) => (
             <tr key={log.id}>
               <td>{log.id}</td>
               <td>{log.timestamp}</td>

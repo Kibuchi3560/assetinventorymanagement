@@ -1,16 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Home from '../src/Home';
-import Navbar from './employees/components/Navbar';
-import Sidebar from './employees/components/Sidebar';
-import EmployeeDashboard from './employees/components/EmployeeDashboard';
-import Requests from './employees/components/Requests';
-// import RequestAsset from './src/employees/components/RequestAsset';
-import RepairForm from './employees/components/RepairForm';
-import Login from './employees/components/Login';
-import Signup from './employees/components/Signup';
-import Repairs from './employees/components/Repairs';
-import RequestForm from './employees/components/RequestForm';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import './App.css';
+
+// Manager Components
+import Dashboard from './manager/Dashboard/DashboardLayout';
+import AllocationLogic from './manager/DataLogic/allocationLogic';
+import ApprovedRequestsPage from './manager/RequestManagement/ApproveRequestModal';
+import RejectedRequestsPage from './manager/RequestManagement/RejectRequestModal';
+import AllocationForm from './manager/AssetAllocation/AllocationForm';
+import AssetManagement from './manager/AssetManagement/AssetManagement'; // Fixed typo
+import AssetAllocationTable from './manager/AssetAllocation/AssetAllocationTable';
+import PendingRequestsTable from './manager/RequestManagement/ApproveRequestModal';
+import CompletedRequestsTable from './manager/RequestManagement/CompletedRequestsTable';
+
+// Admin Components
+import AdminLayout from './admin/components/AdminLayout';
 import AdminDashboard from './admin/pages/AdminDashboard';
 import AdminUsers from './admin/pages/AdminUsers';
 import AdminAssets from './admin/pages/AdminAssets';
@@ -18,66 +23,136 @@ import AdminRequests from './admin/pages/AdminRequests';
 import AuditLogs from './admin/pages/AuditLogs';
 import SystemConfig from './admin/pages/SystemConfig';
 import Reports from './admin/pages/Reports';
-import dashboard from './manager/Dashboard/DashboardLayout';
-import allocationLogic from './manager/DataLogic/allocationLogic';
-// import ApprovedRequestPage from './src/manager/RequestManagement/ApproveRequestModal';
-// import RejectedRequestPage from './src/manager/RequestManagement/RejectRequestModal';
-// import AllocationForm from './src/manager/AssetAllocation/AllocationForm';
-// import AssetManagement from './src/manager/AssetManagement/AssetManagent';
-// import AssertAllocationTable from './src/manager/AssetAllocation/AssetAllocationTable';
-// import PendingRequestsTable from './src/manager/RequestManagement/ApproveRequestModal';
-// import CompletedRequestTable from './src/manager/RequestManagement/CompletedRequestsTable';
-// import Header from './src/admin/components/Header';
-import { useState } from 'react';
 
+// Employee Components
+import EmployeeDashboard from './employees/components/EmployeeDashboard';
+import RequestForm from './employees/components/RequestForm';
+import RepairForm from './employees/components/EmployeeRepairForm';
+import Requests from './employees/components/Requests';
+import Repairs from './employees/components/Repairs';
+import Assets from './employees/components/Assets'; // Added for consistency
+import Login from './employees/components/Login';
+import Signup from './employees/components/Signup';
 
-import './App.css';
+// PrivateRoute wrapper to protect routes based on authentication and roles
+const PrivateRoute = ({ element, roles }) => {
+  const { user, role } = useSelector((state) => state.auth);
+  console.log('PrivateRoute - User:', user, 'Role:', role);
+  if (!user) return <Navigate to="/login" />;
+  if (roles && !roles.includes(role)) return <Navigate to="/" />;
+  return element;
+};
 
-const App = () => {
-  const [LoggedIn, setLoggedIn] = useState(false);
+function App() {
+  const [allocations, setAllocations] = useState([]);
+
+  useEffect(() => {
+    AllocationLogic.getAllocations()
+      .then((data) => setAllocations(data || []))
+      .catch((error) => console.error('Error fetching allocations:', error));
+  }, []);
+
+  const handleAllocationSuccess = (newAllocation) => {
+    setAllocations((prevAllocations) => [...prevAllocations, newAllocation]);
+  };
+
   return (
-
     <Router>
-      {/* <Home /> */}
-      {/* <Navbar />
-      <Sidebar /> */}
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
-      <div className="main-content" style={{ marginLeft: '250px', padding: '20px' }}>
-        <Routes> 
-          {/* Default Route */}
-          <Route path="/" element={LoggedIn ? <EmployeeDashboard /> : <Navigate to="/login" />} />
+        {/* Employee Routes */}
+        <Route
+          path="/employee/dashboard"
+          element={<PrivateRoute element={<EmployeeDashboard />} roles={['Employee']} />}
+        />
+        <Route
+          path="/requestform"
+          element={<PrivateRoute element={<RequestForm />} roles={['Employee']} />}
+        />
+        <Route
+          path="/repairform"
+          element={<PrivateRoute element={<RepairForm />} roles={['Employee']} />}
+        />
+        <Route
+          path="/requests"
+          element={<PrivateRoute element={<Requests />} roles={['Employee']} />}
+        />
+        <Route
+          path="/repairs"
+          element={<PrivateRoute element={<Repairs />} roles={['Employee']} />}
+        />
+        <Route
+          path="/assets"
+          element={<PrivateRoute element={<Assets />} roles={['Employee']} />}
+        />
 
-          {/* Authentication */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={LoggedIn ? <Navigate to="/" /> : <Login setLoggedIn={setLoggedIn} />} />
+        {/* Manager Routes */}
+        <Route
+          path="/manager/dashboard"
+          element={<PrivateRoute element={<Dashboard />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/approved"
+          element={<PrivateRoute element={<ApprovedRequestsPage />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/rejected"
+          element={<PrivateRoute element={<RejectedRequestsPage />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/allocate-asset" // Corrected from "allocation-assert"
+          element={
+            <PrivateRoute
+              element={<AllocationForm onAllocationSuccess={handleAllocationSuccess} />}
+              roles={['Manager']}
+            />
+          }
+        />
+        <Route
+          path="/manager/asset-allocated"
+          element={
+            <PrivateRoute
+              element={<AssetAllocationTable allocations={allocations} />}
+              roles={['Manager']}
+            />
+          }
+        />
+        <Route
+          path="/manager/manage-assets"
+          element={<PrivateRoute element={<AssetManagement />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/pending-requests"
+          element={<PrivateRoute element={<PendingRequestsTable />} roles={['Manager']} />}
+        />
+        <Route
+          path="/manager/completed-requests"
+          element={<PrivateRoute element={<CompletedRequestsTable />} roles={['Manager']} />}
+        />
 
-          {/* Dashboards */}
-          <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/manager/dashboard" element={<dashboard />} />
-          {/* Forms */}
-          <Route path="/requestform" element={<RequestForm />} />
-          <Route path="/repairform" element={<RepairForm />} />
+        {/* Admin Routes with Nested Layout */}
+        <Route path="/admin" element={<PrivateRoute element={<AdminLayout />} roles={['Admin']} />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="assets" element={<AdminAssets />} />
+          <Route path="requests" element={<AdminRequests />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="system-config" element={<SystemConfig />} />
+          <Route path="reports" element={<Reports />} />
+        </Route>
 
-          {/* Pages */}
-          <Route path="/requests" element={<Requests />} />
-          <Route path="/repairs" element={<Repairs />} />
-          {/* <Route path="/assets" element={<Assets />} /> */}
+        {/* Default Route */}
+        <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/assets" element={<AdminAssets />} />
-          <Route path="/admin/requests" element={<AdminRequests />} />
-          <Route path="/admin/audit-logs" element={<AuditLogs />} />
-          <Route path="/admin/system-config" element={<SystemConfig />} />
-          <Route path="/admin/reports" element={<Reports />} />
-
-          {/* 404 Route */}
-          {/* <Route path="*" element={<p>404 - Page Not Found</p>} /> */}
-        </Routes>
-      </div>
+        {/* Fallback for unmatched routes */}
+        <Route path="*" element={<p>404 - Page Not Found</p>} />
+      </Routes>
     </Router>
   );
-};
+}
 
 export default App;

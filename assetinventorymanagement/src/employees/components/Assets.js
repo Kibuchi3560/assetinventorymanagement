@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAllocatedAssets } from './api';
-import './api.css';  
+import './api.css';
 
 const Assets = () => {
   const [assets, setAssets] = useState([]);
@@ -10,7 +10,6 @@ const Assets = () => {
       const assetsData = await fetchAllocatedAssets();
       setAssets(assetsData);
     };
-
     fetchData();
   }, []);
 
@@ -23,8 +22,8 @@ const Assets = () => {
         ) : (
           assets.map((asset) => (
             <div className="api-item" key={asset.id}>
-              <p><strong>Asset Name:</strong> {asset.assetName}</p>
-              <p><strong>Allocation Date:</strong> {asset.allocationDate}</p>
+              <p><strong>Asset Name:</strong> {asset.name}</p>
+              <p><strong>Allocation Date:</strong> {asset.allocation_date}</p>
               <p><strong>Status:</strong> <span className="status">{asset.status}</span></p>
             </div>
           ))

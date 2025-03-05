@@ -1,4 +1,3 @@
-// admin/src/pages/AdminDashboard/AssetDistribution.js
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Pie } from 'react-chartjs-2';
@@ -24,7 +23,9 @@ const AssetDistribution = ({ assets }) => {
     <Card className="mt-4">
       <Card.Body>
         <Card.Title>Asset Distribution</Card.Title>
-        <div style={{ height: '300px' }}><Pie data={data} options={options} /></div>
+        <div style={{ height: '300px' }}>
+          <Pie data={data} options={options} />
+        </div>
       </Card.Body>
     </Card>
   );
