@@ -2,22 +2,22 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const fetchAssets = createAsyncThunk('assets/fetchAssets', async () => {
-  const response = await axios.get('/assets', { withCredentials: true });
+  const response = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//assets', { withCredentials: true });
   return response.data;
 });
 
 export const addAsset = createAsyncThunk('assets/addAsset', async (assetData) => {
-  const response = await axios.post('/assets', assetData, { withCredentials: true });
+  const response = await axios.post(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//assets', assetData, { withCredentials: true });
   return response.data.asset;
 });
 
 export const updateAsset = createAsyncThunk('assets/updateAsset', async (assetData) => {
-  const response = await axios.put(`/assets/${assetData.id}`, assetData, { withCredentials: true });
+  const response = await axios.put(` https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//assets/${assetData.id}`, assetData, { withCredentials: true });
   return response.data.asset;
 });
 
 export const deleteAsset = createAsyncThunk('assets/deleteAsset', async (id) => {
-  await axios.delete(`/assets/${id}`, { withCredentials: true });
+  await axios.delete(` https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//assets/${id}`, { withCredentials: true });
   return id;
 });
 

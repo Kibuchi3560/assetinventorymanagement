@@ -12,9 +12,9 @@ const AllocationForm = ({ onAllocationSuccess }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const assetsResponse = await axios.get('/assets', { withCredentials: true });
+        const assetsResponse = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets', { withCredentials: true });
         setAssets(assetsResponse.data || []);
-        const employeesResponse = await axios.get('/users', { withCredentials: true });
+        const employeesResponse = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/users', { withCredentials: true });
         setEmployees(employeesResponse.data || []);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -27,7 +27,7 @@ const AllocationForm = ({ onAllocationSuccess }) => {
     e.preventDefault();
     if (selectedAsset && selectedEmployee) {
       try {
-        const response = await axios.post(`/assets/${selectedAsset}/allocate`, {
+        const response = await axios.post(` https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets/${selectedAsset}/allocate`, {
           user_id: selectedEmployee,
           quantity,
         }, { withCredentials: true });

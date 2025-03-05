@@ -29,7 +29,7 @@ const SignupPage = () => {
       return;
     }
     try {
-      const response = await axios.post('/users', {
+      const response = await axios.post(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/users', {
         username: form.name,
         email: form.email,
         role: form.role,

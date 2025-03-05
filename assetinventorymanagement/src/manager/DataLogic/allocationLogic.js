@@ -4,7 +4,7 @@ axios.defaults.withCredentials = true;
 
 export const allocateAsset = async (assetId, employeeId, quantity) => {
   try {
-    const response = await axios.post(`/assets/${assetId}/allocate`, {
+    const response = await axios.post(` https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets/${assetId}/allocate`, {
       user_id: employeeId,
       quantity,
     });
@@ -16,7 +16,7 @@ export const allocateAsset = async (assetId, employeeId, quantity) => {
 
 export const getAllocations = async () => {
   try {
-    const response = await axios.get('/assets'); // Filter on frontend
+    const response = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets'); // Filter on frontend
     return response.data.filter(asset => asset.status === 'allocated');
   } catch (error) {
     console.error('Error fetching allocations:', error);

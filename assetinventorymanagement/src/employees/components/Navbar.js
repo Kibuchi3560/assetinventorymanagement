@@ -8,7 +8,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/logout', {}, { withCredentials: true });
+      await axios.post(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//logout', {}, { withCredentials: true });
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);

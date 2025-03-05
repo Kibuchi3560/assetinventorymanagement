@@ -18,10 +18,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const requestsResponse = await axios.get('/requests', { withCredentials: true });
+        const requestsResponse = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/requests', { withCredentials: true });
         setPendingRequests(requestsResponse.data.filter(req => req.status === 'Pending') || []);
 
-        const assetsResponse = await axios.get('/assets', { withCredentials: true });
+        const assetsResponse = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets', { withCredentials: true });
         const assets = assetsResponse.data || [];
         setData([
           { name: "Electronics", assets: assets.filter(a => a.category === 'Electronics').length, requests: requestsResponse.data.filter(r => r.asset_category === 'Electronics').length },

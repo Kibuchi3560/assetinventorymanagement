@@ -2,12 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
-  const response = await axios.get('/users', { withCredentials: true });
+  const response = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//users', { withCredentials: true });
   return response.data;
 });
 
 export const addUser = createAsyncThunk('users/addUser', async (userData) => {
-  const response = await axios.post('/users', userData, { withCredentials: true });
+  const response = await axios.post(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//users', userData, { withCredentials: true });
   return response.data.user;
 });
 
