@@ -4,16 +4,16 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 
 export const createRequest = (newRequest) => {
-    return axios.post(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//requests', newRequest);
+    return axios.post(' /api//requests', newRequest);
 };
 
 export const getRequests = () => {
     // Use /requests/me for employee-specific requests
-    return axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//requests');
+    return axios.get(' /api//requests');
 };
 
 export const getRequest = (requestId) => {
-    return axios.get(` https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//requests/${requestId}`);
+    return axios.get(` /api//requests/${requestId}`);
 };
 
 export default { createRequest, getRequests, getRequest };

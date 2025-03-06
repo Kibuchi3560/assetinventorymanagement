@@ -17,7 +17,7 @@ const RequestForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/requests', {
+      const response = await axios.post('/api/requests', {
         request_type: 'New Asset',
         reason: formData.reason,
         urgency: formData.urgency,

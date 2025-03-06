@@ -4,7 +4,7 @@ axios.defaults.withCredentials = true;
 
 const getAssets = async () => {
   try {
-    const response = await axios.get('https://assetinventorymanagement.onrender.com/assets');
+    const response = await axios.get('/api/assets');
     return response.data;
   } catch (error) {
     console.error('Error fetching assets:', error);
@@ -14,7 +14,7 @@ const getAssets = async () => {
 
 const addAsset = async (assetData) => {
   try {
-    const response = await axios.post('https://assetinventorymanagement.onrender.com/assets', assetData);
+    const response = await axios.post('/api/assets', assetData);
     return response.data;
   } catch (error) {
     console.error('Error adding asset:', error);
@@ -24,7 +24,7 @@ const addAsset = async (assetData) => {
 
 const updateAsset = async (assetId, assetData) => {
   try {
-    const response = await axios.put(` https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets/${assetId}`, assetData);
+    const response = await axios.put(`/api/assets/${assetId}`, assetData);
     return response.data;
   } catch (error) {
     console.error('Error updating asset:', error);
@@ -34,7 +34,7 @@ const updateAsset = async (assetId, assetData) => {
 
 const deleteAsset = async (assetId) => {
   try {
-    const response = await axios.delete(` https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets/${assetId}`);
+    const response = await axios.delete(`/api/assets/${assetId}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting asset:', error);
@@ -42,4 +42,5 @@ const deleteAsset = async (assetId) => {
   }
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default { getAssets, addAsset, updateAsset, deleteAsset };

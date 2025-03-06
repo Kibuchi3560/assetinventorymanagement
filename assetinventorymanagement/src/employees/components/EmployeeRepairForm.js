@@ -17,7 +17,7 @@ const EmployeeRepairForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/requests', {
+      const response = await axios.post('/api/requests', {
         asset_id: formData.asset_id,
         request_type: 'Repair',
         reason: formData.issueDescription,

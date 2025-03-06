@@ -13,7 +13,7 @@ const AssetManagement = () => {
   useEffect(() => {
     const fetchAssets = async () => {
       try {
-        const response = await axios.get(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets', { withCredentials: true });
+        const response = await axios.get('/api/assets', { withCredentials: true });
         setAssets(response.data || []);
       } catch (err) {
         setError('Failed to load assets');
@@ -26,7 +26,7 @@ const AssetManagement = () => {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(' https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com/assets', {
+      const response = await axios.post('/api/assets', {
         name: assetName,
         category,
         quantity,
@@ -44,7 +44,7 @@ const AssetManagement = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`https://assetinventorymanagement.onrender.com/assets/${assetId}`, {
+      const response = await axios.put(`/api/assets/${assetId}`, {
         name: assetName,
         category,
         quantity,
@@ -62,7 +62,7 @@ const AssetManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`https://assetinventorymanagement.onrender.com/assets/${id}`, { withCredentials: true });
+      const response = await axios.delete(`/api/assets/${id}`, { withCredentials: true });
       if (response.status === 200) {
         setAssets(assets.filter((asset) => asset.id !== id));
         alert('Asset deleted successfully');

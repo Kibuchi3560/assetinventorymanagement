@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 const Reports = () => {
+  // eslint-disable-next-line no-unused-vars
   const { assets, requests } = useSelector((state) => ({
     assets: state.assets.items,
     requests: state.requests.items,
@@ -11,7 +12,7 @@ const Reports = () => {
 
   const handleExport = async (format, reportType) => {
     try {
-      const response = await axios.get('/https://assetinventorymanagement.onrender.com/user/reporting-export', {
+      const response = await axios.get('/api/reporting-export', {
         withCredentials: true,
         responseType: 'blob', // For file download
       });

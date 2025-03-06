@@ -16,9 +16,9 @@ const EmployeeDashboard = () => {
     const fetchData = async () => {
       try {
         const [requestsRes, repairsRes, assetsRes] = await Promise.all([
-          axios.get(" https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//requests"),
-          axios.get(" https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//repairs"),
-          axios.get(" https://cors-anywhere.herokuapp.com/https://assetinventorymanagement.onrender.com//assets"),
+          axios.get("/apirequests"),
+          axios.get(" /apirepairs"),
+          axios.get("/apiassets"),
         ]);
 
         setRequests(requestsRes.data);

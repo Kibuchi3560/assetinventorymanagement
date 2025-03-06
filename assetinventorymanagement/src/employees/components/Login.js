@@ -9,7 +9,7 @@ const Login = () => {
   const [form, setForm] = useState({
     name: '',
     password: '',
-    role: '3', // Default to Employee
+    role: '1', // Default to Admin
     showPassword: false,
   });
   const [error, setError] = useState(null);
@@ -29,7 +29,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'https://assetinventorymanagement.onrender.com/login',
+        '/api/assetinventorymanagement/login',
         {
           name: form.name,
           password: form.password,
@@ -75,11 +75,11 @@ const Login = () => {
           onChange={handleChange}
           required
         />
-        {/* <select name="role" value={form.role} onChange={handleChange}>
+        <select name="role" value={form.role} onChange={handleChange}>
           <option value="1">Admin</option>
           <option value="2">Manager</option>
           <option value="3">Employee</option>
-        </select> */}
+        </select>
         <label>
           <input
             type="checkbox"
