@@ -38,6 +38,7 @@ import Signup from './employees/components/Signup';
 const PrivateRoute = ({ element, roles }) => {
   const { user, role } = useSelector((state) => state.auth);
   console.log('PrivateRoute - User:', user, 'Role:', role);
+
   if (!user) return <Navigate to="/login" />;
   if (roles && !roles.includes(role)) return <Navigate to="/" />;
   return element;

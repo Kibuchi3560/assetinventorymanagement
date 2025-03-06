@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux'; // Import useDispatch for Redux
-import { setAuth } from '../../admin/redux/authSlice'; // Adjust the path to your auth slice
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setAuth } from '../../admin/redux/authSlice';
 import './Login.css';
 
 const Login = () => {
-  const [form, setForm] = useState({
-    name: '',
-    password: '',
-    role: '1', // Default to Admin
-    showPassword: false,
-  });
+  const [form, setForm] = useState({ name: '', password: '', role: '1', showPassword: false });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize Redux dispatch
+  const dispatch = useDispatch();
+
+  const roleMap = { '1': 'Admin', '2': 'Manager', '3': 'Employee' };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,30 +25,23 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        '/api/assetinventorymanagement/login',
-        {
-          name: form.name,
-          password: form.password,
-          role: form.role,
-        },
-        { withCredentials: true }
-      );
+      const response = await axios.post('/api/assetinventorymanagement/login', {
+        name: form.name,
+        password: form.password,
+        role: form.role,
+      }, { withCredentials: true });
 
       if (response.status === 200) {
-        const { role, user } = response.data; // Assuming backend returns user and role
-
-        // Update Redux store with user and role
-        dispatch(setAuth({ user: user || form.name, role }));
-
-        // Navigate based on role
-        if (role === '1') navigate('/admin');
-        else if (role === '2') navigate('/manager/dashboard');
+        const { user } = response.data;
+        const roleStr = roleMap[form.role];
+        dispatch(setAuth({ user: user.name, role: roleStr }));
+        
+        if (roleStr === 'Admin') navigate('/admin/dashboard');
+        else if (roleStr === 'Manager') navigate('/manager/dashboard');
         else navigate('/employee/dashboard');
       }
-    } catch (error) {
-      setError('Login failed');
-      console.error('Login failed:', error);
+    } catch (err) {
+      setError(err.response?.data.message || 'Login failed.');
     }
   };
 
@@ -81,15 +71,11 @@ const Login = () => {
           <option value="3">Employee</option>
         </select>
         <label>
-          <input
-            type="checkbox"
-            checked={form.showPassword}
-            onChange={togglePasswordVisibility}
-          />{' '}
+          <input type="checkbox" checked={form.showPassword} onChange={togglePasswordVisibility} />
           Show Password
         </label>
-        <button type="submit">Login</button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
+        <button type="submit">Login</button>
       </form>
     </div>
   );
