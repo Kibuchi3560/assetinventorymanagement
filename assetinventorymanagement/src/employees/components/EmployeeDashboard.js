@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
-import RequestCard from "./RequestCard";
-import Navbar from "../../admin/components/Navbar"; // Shared with admin
-import Sidebar from "../../admin/components/Sidebar"; // Shared with admin
+// src/employees/components/EmployeeDashboard.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import RequestCard from './RequestCard';
 
 const EmployeeDashboard = () => {
   const [requests, setRequests] = useState([]);
@@ -15,89 +15,113 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [requestsRes, repairsRes, assetsRes] = await Promise.all([
-          axios.get("/api/requests"),
-          axios.get("/api/repairs"),
-          axios.get("/api/assets"),
+        const [requestsRes, assetsRes] = await Promise.all([
+          axios.get('/api/requests/me', { withCredentials: true }),
+          axios.get('/api/assets/allocated', { withCredentials: true }),
         ]);
-
-        setRequests(requestsRes.data);
-        setRepairs(repairsRes.data);
-        setAssets(assetsRes.data);
-      } catch (error) {
-        setError(error.message);
+        const allRequests = requestsRes.data || [];
+        setRequests(allRequests);
+        setRepairs(allRequests.filter(r => r.request_type === 'Repair'));
+        setAssets(assetsRes.data || []);
+      } catch (err) {
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  // Metrics similar to AdminDashboard
+  const metricsData = [
+    { title: 'Total Requests', value: requests.length, variant: 'primary' },
+    { title: 'Repair Requests', value: repairs.length, variant: 'warning' },
+    { title: 'Allocated Assets', value: assets.length, variant: 'success' },
+  ];
+
   return (
-    <div className="dashboard-container">
-      <Navbar role="employee" /> {/* Admin-like header, customized for employee */}
-      <div className="dashboard-layout">
-        <Sidebar role="employee" /> {/* Admin-like sidebar, employee-specific links */}
-        <div className="dashboard-content">
-          <h1>Employee Dashboard</h1>
+    <Container fluid className="py-4">
+      <h1>Employee Dashboard</h1>
+      {/* Metrics Section */}
+      <Row className="mb-4">
+        {metricsData.map((metric, index) => (
+          <Col key={index} md={4}>
+            <Card className={`text-white bg-${metric.variant} mb-3`}>
+              <Card.Body>
+                <Card.Title>{metric.title}</Card.Title>
+                <Card.Text style={{ fontSize: '2rem' }}>{metric.value}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
 
-          {/* Section for Requests */}
-          <section>
-            <h2>Requests</h2>
-            <Link to="/requests">
-              <button>View All Requests</button>
-            </Link>
-            {requests.length === 0 ? (
-              <p>No requests available.</p>
-            ) : (
-              requests.map((request) => <RequestCard key={request.id} request={request} />)
-            )}
-          </section>
+      <Row>
+        <Col lg={8}>
+          {/* Requests Card */}
+          <Card className="mb-4">
+            <Card.Header className="d-flex justify-content-between align-items-center">
+              <h2>Requests</h2>
+              <Link to="/employee/requests">
+                <Button variant="light" size="sm">View All</Button>
+              </Link>
+            </Card.Header>
+            <Card.Body>
+              {requests.length === 0 ? (
+                <p>No requests available.</p>
+              ) : (
+                requests.map(r => <RequestCard key={r.id} request={r} />)
+              )}
+            </Card.Body>
+          </Card>
 
-          {/* Section for Repairs */}
-          <section>
-            <h2>Repairs</h2>
-            <Link to="/repairs">
-              <button>View All Repairs</button>
-            </Link>
-            {repairs.length === 0 ? (
-              <p>No repair requests available.</p>
-            ) : (
-              <ul>
-                {repairs.map((repair) => (
-                  <li key={repair.id}>
-                    <strong>{repair.asset}</strong>: {repair.status} (Completion Date: {repair.completionDate})
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          {/* Repair Requests Card */}
+          <Card className="mb-4">
+            <Card.Header className="d-flex justify-content-between align-items-center">
+              <h2>Repair Requests</h2>
+              <Link to="/employee/repairs">
+                <Button variant="light" size="sm">View All</Button>
+              </Link>
+            </Card.Header>
+            <Card.Body>
+              {repairs.length === 0 ? (
+                <p>No repair requests available.</p>
+              ) : (
+                repairs.map(r => <RequestCard key={r.id} request={r} />)
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
 
-          {/* Section for Allocated Assets */}
-          <section>
-            <h2>Allocated Assets</h2>
-            <Link to="/assets">
-              <button>View All Assets</button>
-            </Link>
-            {assets.length === 0 ? (
-              <p>No assets allocated.</p>
-            ) : (
-              <ul>
-                {assets.map((asset) => (
-                  <li key={asset.id}>
-                    <strong>{asset.assetName}</strong>: Allocated on {asset.allocationDate} (Status: {asset.status})
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </div>
-      </div>
-    </div>
+        <Col lg={4}>
+          {/* Allocated Assets Card */}
+          <Card className="mb-4">
+            <Card.Header className="d-flex justify-content-between align-items-center">
+              <h2>Allocated Assets</h2>
+              <Link to="/employee/assets">
+                <Button variant="light" size="sm">View All</Button>
+              </Link>
+            </Card.Header>
+            <Card.Body>
+              {assets.length === 0 ? (
+                <p>No assets allocated.</p>
+              ) : (
+                <ul className="list-unstyled">
+                  {assets.map(asset => (
+                    <li key={asset.id}>
+                      <strong>{asset.name}</strong> - Allocated on {asset.allocationDate || 'N/A'} (Status: {asset.status})
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

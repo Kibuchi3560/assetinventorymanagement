@@ -1,23 +1,44 @@
+// src/employees/components/EmployeeSidebar.js
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './Sidebar.css';
+import { NavLink } from 'react-router-dom';
+import { FaTachometerAlt, FaCube, FaEnvelope, FaWrench } from 'react-icons/fa';
+import '../../admin/components/Sidebar.css'; // Shared styling
 
-const Sidebar = () => {
+const EmployeeSidebar = () => {
   return (
-    <div className="sidebar">
-      <div className="sidebar-header">
-        <h2>Employee Dashboard</h2>
+    <div className="sidebar d-flex flex-column bg-light">
+      <div className="p-3 sidebar-header">
+        <h4>Employee Panel</h4>
       </div>
-      <ul className="sidebar-menu">
-        <li><Link to="/employee/dashboard" className="sidebar-link">Dashboard</Link></li>
-        <li><Link to="/requestform" className="sidebar-link">Request Asset</Link></li>
-        <li><Link to="/repairform" className="sidebar-link">Request Repair</Link></li>
-        <li><Link to="/requests" className="sidebar-link">Requests</Link></li>
-        <li><Link to="/repairs" className="sidebar-link">Repairs</Link></li>
-        <li><Link to="/assets" className="sidebar-link">Assets</Link></li>
+      <ul className="nav nav-pills flex-column mb-auto p-3">
+        <li className="nav-item mb-2">
+          <NavLink to="/employee/dashboard" className="nav-link">
+            <FaTachometerAlt className="me-2" /> Dashboard
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/employee/requestform" className="nav-link">
+            <FaEnvelope className="me-2" /> Request Asset
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/employee/repairform" className="nav-link">
+            <FaWrench className="me-2" /> Request Repair
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/employee/requests" className="nav-link">
+            <FaEnvelope className="me-2" /> My Requests
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/employee/assets" className="nav-link">
+            <FaCube className="me-2" /> My Assets
+          </NavLink>
+        </li>
       </ul>
     </div>
   );
 };
 
-export default Sidebar;
+export default EmployeeSidebar;

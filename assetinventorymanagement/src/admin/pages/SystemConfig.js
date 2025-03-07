@@ -5,6 +5,7 @@ import axios from 'axios';
 const SystemConfig = () => {
   const [categories, setCategories] = useState([]);
   const [departments, setDepartments] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [urgencyLevels] = useState(['Low', 'Medium', 'High']); // Static list
   const [newCategory, setNewCategory] = useState('');
   const [newDepartment, setNewDepartment] = useState('');
@@ -12,7 +13,7 @@ const SystemConfig = () => {
   // Fetch categories and departments from the backend on component mount
   useEffect(() => {
     axios
-      .get('/https://assetinventorymanagement.onrender.com/user/categories', { withCredentials: true })
+      .get('/api/assetinventorymanagement/categories', { withCredentials: true })
       .then((response) => {
         setCategories(response.data);
       })
@@ -21,7 +22,7 @@ const SystemConfig = () => {
       });
 
     axios
-      .get('/https://assetinventorymanagement.onrender.com/user/departments', { withCredentials: true })
+      .get('/api/assetinventorymanagement/departments', { withCredentials: true })
       .then((response) => {
         setDepartments(response.data);
       })
@@ -36,7 +37,7 @@ const SystemConfig = () => {
     if (newCategory.trim()) {
       axios
         .post(
-          '/https://assetinventorymanagement.onrender.com/user/categories',
+          ' /api/assetinventorymanagement/categories',
           { name: newCategory },
           { withCredentials: true }
         )
@@ -57,7 +58,7 @@ const SystemConfig = () => {
     if (newDepartment.trim()) {
       axios
         .post(
-          '/https://assetinventorymanagement.onrender.com/user/departments',
+          '/api/assetinventorymanagement/departments',
           { name: newDepartment },
           { withCredentials: true }
         )

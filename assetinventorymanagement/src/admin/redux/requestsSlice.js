@@ -2,23 +2,23 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const fetchRequests = createAsyncThunk('requests/fetchRequests', async () => {
-  const response = await axios.get('/requests', { withCredentials: true });
+  const response = await axios.get('/api/requests', { withCredentials: true });
   return response.data;
 });
 
 export const createRequest = createAsyncThunk('requests/create', async (requestData) => {
-  const response = await axios.post('/requests', requestData, { withCredentials: true });
+  const response = await axios.post('/api/requests', requestData, { withCredentials: true });
   return response.data.request;
 });
 
 export const updateRequest = createAsyncThunk('requests/updateRequest', async ({ id, status }) => {
-  const response = await axios.put(`/requests/${id}`, { status }, { withCredentials: true });
+  const response = await axios.put(`/api/requests/${id}`, { status }, { withCredentials: true });
   return response.data.request;
 });
 
 export const approveAllRequests = createAsyncThunk('requests/approveAll', async () => {
   await axios.put('/requests/approve-all', {}, { withCredentials: true });
-  const response = await axios.get('/requests', { withCredentials: true });
+  const response = await axios.get('/api/requests', { withCredentials: true });
   return response.data;
 });
 

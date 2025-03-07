@@ -56,22 +56,7 @@ const AdminRequests = () => {
               <td>
                 {request.status === 'Pending' && (
                   <>
-                    <Button
-                      variant="outline-success"
-                      size="sm"
-                      onClick={() => handleAction(request.id, 'Approved')}
-                      className="me-2"
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => handleAction(request.id, 'Rejected')}
-                      className="me-2"
-                    >
-                      Reject
-                    </Button>
+                    
                   </>
                 )}
               </td>

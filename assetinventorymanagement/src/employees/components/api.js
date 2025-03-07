@@ -4,7 +4,7 @@ axios.defaults.withCredentials = true;
 
 export const fetchRequests = async () => {
   try {
-    const response = await axios.get('https://assetinventorymanagement.onrender.com/requests/me');
+    const response = await axios.get('/api/requests');
     return response.data;
   } catch (error) {
     console.error('Error fetching requests:', error);
@@ -24,7 +24,7 @@ export const fetchRepairs = async () => {
 
 export const fetchAllocatedAssets = async () => {
   try {
-    const response = await axios.get('https://assetinventorymanagement.onrender.com/assets');
+    const response = await axios.get('/api/assets');
     // Filter for allocated assets (assuming backend returns a status or user_id field)
     return response.data.filter(asset => asset.status === 'allocated' && asset.user_id);
   } catch (error) {

@@ -2,12 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
-  const response = await axios.get('/users', { withCredentials: true });
+  const response = await axios.get('/api/users', { withCredentials: true });
   return response.data;
 });
 
 export const addUser = createAsyncThunk('users/addUser', async (userData) => {
-  const response = await axios.post('/users', userData, { withCredentials: true });
+  const response = await axios.post('/api/users', userData, { withCredentials: true });
   return response.data.user;
 });
 

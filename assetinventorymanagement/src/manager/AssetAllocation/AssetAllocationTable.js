@@ -24,8 +24,8 @@ const AssetAllocationTable = ({ allocations }) => {
           {allocations.length > 0 ? (
             allocations.map((allocation) => (
               <tr key={allocation.id}>
-                <td>{allocation.asset_name}</td>
-                <td>{allocation.employee_name}</td>
+                <td>{allocation.assetName}</td>
+                <td>{allocation.employeeName}</td>
                 <td>{allocation.quantity}</td>
               </tr>
             ))
@@ -38,4 +38,4 @@ const AssetAllocationTable = ({ allocations }) => {
   );
 };
 
-export default AssetAllocationTable;
+export default AssetAllocationTable

@@ -4,16 +4,16 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 
 export const createRequest = (newRequest) => {
-    return axios.post('/requests', newRequest);
+    return axios.post(' /api//requests', newRequest);
 };
 
 export const getRequests = () => {
     // Use /requests/me for employee-specific requests
-    return axios.get('/requests/me');
+    return axios.get(' /api//requests');
 };
 
 export const getRequest = (requestId) => {
-    return axios.get(`/requests/${requestId}`);
+    return axios.get(` /api//requests/${requestId}`);
 };
 
 export default { createRequest, getRequests, getRequest };

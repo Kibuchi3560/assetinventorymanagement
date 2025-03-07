@@ -8,15 +8,17 @@ const AllocationForm = ({ onAllocationSuccess }) => {
   const [selectedAsset, setSelectedAsset] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const assetsResponse = await axios.get('/assets', { withCredentials: true });
+        const assetsResponse = await axios.get('/api/assets', { withCredentials: true });
         setAssets(assetsResponse.data || []);
-        const employeesResponse = await axios.get('/users', { withCredentials: true });
+        const employeesResponse = await axios.get('/api/users', { withCredentials: true });
         setEmployees(employeesResponse.data || []);
       } catch (error) {
+        setError('Error fetching data');
         console.error('Error fetching data:', error);
       }
     };
@@ -25,34 +27,40 @@ const AllocationForm = ({ onAllocationSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedAsset && selectedEmployee) {
-      try {
-        const response = await axios.post(`/assets/${selectedAsset}/allocate`, {
-          user_id: selectedEmployee,
-          quantity,
-        }, { withCredentials: true });
-        if (response.status === 200) {
-          alert('Asset successfully allocated!');
-          const newAllocation = {
-            assetName: assets.find(a => a.id === selectedAsset).name,
-            employeeName: employees.find(e => e.id === selectedEmployee).username,
-            quantity,
-            id: response.data.id,
-          };
-          onAllocationSuccess(newAllocation);
-        }
-      } catch (error) {
-        alert('Error allocating asset!');
-        console.error('Error:', error);
-      }
-    } else {
+    if (!selectedAsset || !selectedEmployee) {
       alert('Please select both asset and employee.');
+      return;
+    }
+    try {
+      const response = await axios.post(`/api/assets/${selectedAsset}/allocate`, {
+        employee_id: selectedEmployee, 
+        user_id: selectedEmployee,     
+        quantity,
+      }, { withCredentials: true });
+      
+      if (response.status === 200) {
+        alert('Asset successfully allocated!');
+        const newAllocation = {
+          assetName: assets.find(a => a.id === selectedAsset)?.name || 'Unknown',
+          employeeName: employees.find(e => e.id === selectedEmployee)?.username || 'Unknown',
+          quantity,
+          id: `${selectedAsset}-${selectedEmployee}-${Date.now()}`, // Generate a temp ID
+        };
+        onAllocationSuccess(newAllocation);
+        setSelectedAsset('');
+        setSelectedEmployee('');
+        setQuantity(1);
+      }
+    } catch (error) {
+      setError('Error allocating asset');
+      console.error('Error:', error);
     }
   };
 
   return (
     <div>
       <h2>Allocate Asset</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Asset</label>
@@ -77,7 +85,7 @@ const AllocationForm = ({ onAllocationSuccess }) => {
           <input
             type="number"
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={(e) => setQuantity(Number(e.target.value))}
             min="1"
             required
           />

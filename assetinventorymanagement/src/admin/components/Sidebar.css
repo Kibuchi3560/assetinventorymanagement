@@ -1,0 +1,23 @@
+/* Sidebar positioned to the left, starting right below the header */
+.sidebar {
+  position: fixed;
+  top: var(--header-height, 70px); /* Fallback to 70px if the variable isn't set */
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  transition: width 0.3s ease;
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+}
+
+/* Responsive adjustments for devices with a viewport width less than 768px */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 80px;
+  }
+  .sidebar-header h4 {
+    display: none;
+  }
+  .link-text {
+    display: none;
+  }
+}

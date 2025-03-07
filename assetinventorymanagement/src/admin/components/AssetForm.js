@@ -6,6 +6,7 @@ import axios from 'axios';
 const AssetForm = () => {
   const dispatch = useDispatch();
   const [categories, setCategories] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [departments, setDepartments] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
@@ -15,11 +16,11 @@ const AssetForm = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('/https://assetinventorymanagement.onrender.com/user/categories', { withCredentials: true })
+    axios.get('/api/categories', { withCredentials: true })
       .then((response) => setCategories(response.data))
       .catch((error) => console.error('Error fetching categories:', error));
 
-    axios.get('/https://assetinventorymanagement.onrender.com/user/departments', { withCredentials: true })
+    axios.get('/api/departments', { withCredentials: true })
       .then((response) => setDepartments(response.data))
       .catch((error) => console.error('Error fetching departments:', error));
   }, []);

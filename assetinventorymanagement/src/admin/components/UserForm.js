@@ -10,7 +10,7 @@ const UserForm = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('/https://assetinventorymanagement.onrender.com/user/departments', { withCredentials: true })
+    axios.get('/api/assetinventorymanagement/departments', { withCredentials: true })
       .then((response) => setDepartments(response.data))
       .catch((error) => console.error('Error fetching departments:', error));
   }, []);

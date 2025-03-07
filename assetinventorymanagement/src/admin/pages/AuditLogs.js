@@ -7,7 +7,7 @@ const AuditLogs = () => {
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
-    axios.get('/assetinventorymanagement/activity-log', { withCredentials: true })
+    axios.get('/api/activity-log', { withCredentials: true })
       .then((response) => setLogs(response.data))
       .catch((error) => console.error('Error fetching logs:', error));
   }, []);
