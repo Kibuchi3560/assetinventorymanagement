@@ -1,27 +1,44 @@
+// src/manager/components/ManagerSidebar.js
 import React from 'react';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './sidebar.css';
+import { NavLink } from 'react-router-dom';
+import { FaTachometerAlt, FaCube, FaEnvelope, FaCheckCircle, FaWrench } from 'react-icons/fa';
+import '../../admin/components/Sidebar.css'; // Shared styling
 
-const Sidebar = ({ children }) => {
+const ManagerSidebar = () => {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside className="d-flex flex-column p-3 bg-white text-blue" style={{ width: '250px', height: '100vh', position: 'sticky', top: '60px', overflowY: 'auto' }}>
-        <nav>
-          <ul className="nav flex-column">
-            <li className="nav-item"><Link className="nav-link text-blue" to="/manager/dashboard">Dashboard</Link></li>
-            <li className="nav-item"><Link className="nav-link text-blue" to="/manager/manage-assets">Manage Assets</Link></li>
-            <li className="nav-item"><Link className="nav-link text-blue" to="/manager/pending-requests">Pending & Approved Requests</Link></li>
-            <li className="nav-item"><Link className="nav-link text-blue" to="/manager/allocation-assert">Allocate Asset</Link></li>
-            <li className="nav-item"><Link className="nav-link text-blue" to="/manager/asset-allocated">Asset Allocated</Link></li>
-            <li className="nav-item"><Link className="nav-link text-blue" to="/manager/completed-requests">Completed Requests</Link></li>
-            <li className="nav-item"><Link className="nav-link text-blue" to="/manager/rejected">Reject Request</Link></li>
-          </ul>
-        </nav>
-      </aside>
-      <main className="flex-grow-1 p-3">{children}</main>
+    <div className="sidebar d-flex flex-column bg-light">
+      <div className="p-3 sidebar-header">
+        <h4>Manager Panel</h4>
+      </div>
+      <ul className="nav nav-pills flex-column mb-auto p-3">
+        <li className="nav-item mb-2">
+          <NavLink to="/manager/dashboard" className="nav-link">
+            <FaTachometerAlt className="me-2" /> Dashboard
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/manager/manage-assets" className="nav-link">
+            <FaCube className="me-2" /> Manage Assets
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/manager/pending-requests" className="nav-link">
+            <FaEnvelope className="me-2" /> Pending Requests
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/manager/allocate-asset" className="nav-link">
+            <FaWrench className="me-2" /> Allocate Asset
+          </NavLink>
+        </li>
+        <li className="nav-item mb-2">
+          <NavLink to="/manager/completed-requests" className="nav-link">
+            <FaCheckCircle className="me-2" /> Completed Requests
+          </NavLink>
+        </li>
+      </ul>
     </div>
   );
 };
 
-export default Sidebar;
+export default ManagerSidebar;
