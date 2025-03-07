@@ -1,42 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ApproveRequest from './ApproveRequestModal';
 import RejectRequest from './RejectRequestModal';
 import Filters from './Filters';
 
-const PendingRequestsTable = ({ requests = [] }) => {
-  const [pendingRequests, setPendingRequests] = useState(requests || []);
-  const [filteredRequests, setFilteredRequests] = useState(requests || []);
+const PendingRequestsTable = () => {
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [filteredRequests, setFilteredRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [actionType, setActionType] = useState(""); 
+  const [actionType, setActionType] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleApprove = (requestId, comment) => {
-    setPendingRequests(pendingRequests.filter(request => request.id !== requestId));
-    setFilteredRequests(filteredRequests.filter(request => request.id !== requestId));
-    console.log(`Request ${requestId} approved. Comment: ${comment}`);
-    setSelectedRequest(null);
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await axios.get('/api/requests?status=Pending', { withCredentials: true });
+        setPendingRequests(response.data);
+        setFilteredRequests(response.data);
+      } catch (err) {
+        setError('Failed to fetch requests');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRequests();
+  }, []);
+
+  const handleApprove = async (requestId, comment) => {
+    try {
+      await axios.put(`/api/requests/${requestId}/approve`, {}, { withCredentials: true });
+      setPendingRequests(pendingRequests.filter(r => r.id !== requestId));
+      setFilteredRequests(filteredRequests.filter(r => r.id !== requestId));
+      alert(`Request ${requestId} approved${comment ? `: ${comment}` : ''}`);
+      setSelectedRequest(null);
+    } catch (error) {
+      setError(error.response?.data?.message || 'Error approving request');
+      console.error(error);
+    }
   };
 
-  const handleReject = (requestId, comment) => {
-    setPendingRequests(pendingRequests.filter(request => request.id !== requestId));
-    setFilteredRequests(filteredRequests.filter(request => request.id !== requestId));
-    console.log(`Request ${requestId} rejected. Comment: ${comment}`);
-    setSelectedRequest(null);
+  const handleReject = async (requestId, comment) => {
+    try {
+      await axios.put(`/api/requests/${requestId}/reject`, {}, { withCredentials: true });
+      setPendingRequests(pendingRequests.filter(r => r.id !== requestId));
+      setFilteredRequests(filteredRequests.filter(r => r.id !== requestId));
+      alert(`Request ${requestId} rejected${comment ? `: ${comment}` : ''}`);
+      setSelectedRequest(null);
+    } catch (error) {
+      setError(error.response?.data?.message || 'Error rejecting request');
+      console.error(error);
+    }
   };
 
   const handleFilterChange = (filter) => {
-    if (!filter) {
-      setFilteredRequests(pendingRequests);
-    } else {
-      setFilteredRequests(pendingRequests.filter(request => request.urgency === filter));
-    }
+    if (!filter) setFilteredRequests(pendingRequests);
+    else setFilteredRequests(pendingRequests.filter(request => request.urgency === filter));
   };
+
+  if (loading) return <p>Loading requests...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div>
       <h2>Pending Requests</h2>
       <Filters onFilterChange={handleFilterChange} />
-      
-      {Array.isArray(filteredRequests) && filteredRequests.length === 0 ? (
+      {filteredRequests.length === 0 ? (
         <p>No pending requests.</p>
       ) : (
         <table>
@@ -54,33 +84,32 @@ const PendingRequestsTable = ({ requests = [] }) => {
             {filteredRequests.map(request => (
               <tr key={request.id}>
                 <td>{request.id}</td>
-                <td>{request.employeeName || "Unknown"}</td>
-                <td>{request.assetType}</td>
+                <td>{request.user}</td>
+                <td>{request.asset}</td>
                 <td>{request.reason}</td>
                 <td>{request.urgency}</td>
                 <td>
-                  <button onClick={() => { setSelectedRequest(request); setActionType("approve"); }}>Approve</button>
-                  <button onClick={() => { setSelectedRequest(request); setActionType("reject"); }}>Reject</button>
+                  <button onClick={() => { setSelectedRequest(request); setActionType('approve'); }}>Approve</button>
+                  <button onClick={() => { setSelectedRequest(request); setActionType('reject'); }}>Reject</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
-
       {selectedRequest && (
         <div className="modal">
-          {actionType === "approve" ? (
-            <ApproveRequest 
-              request={selectedRequest} 
-              onApprove={handleApprove} 
-              onCancel={() => setSelectedRequest(null)} 
+          {actionType === 'approve' ? (
+            <ApproveRequest
+              request={selectedRequest}
+              onApprove={handleApprove}
+              onCancel={() => setSelectedRequest(null)}
             />
           ) : (
-            <RejectRequest 
-              request={selectedRequest} 
-              onReject={handleReject} 
-              onCancel={() => setSelectedRequest(null)} 
+            <RejectRequest
+              request={selectedRequest}
+              onReject={handleReject}
+              onCancel={() => setSelectedRequest(null)}
             />
           )}
         </div>

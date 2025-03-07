@@ -15,7 +15,7 @@ const getAssets = async () => {
 const addAsset = async (assetData) => {
   try {
     const response = await axios.post('/api/assets', assetData);
-    return response.data;
+    return response.data.asset; // Return the asset object
   } catch (error) {
     console.error('Error adding asset:', error);
     throw error;
@@ -25,7 +25,7 @@ const addAsset = async (assetData) => {
 const updateAsset = async (assetId, assetData) => {
   try {
     const response = await axios.put(`/api/assets/${assetId}`, assetData);
-    return response.data;
+    return response.data.asset; // Assume asset is returned
   } catch (error) {
     console.error('Error updating asset:', error);
     throw error;
@@ -34,8 +34,8 @@ const updateAsset = async (assetId, assetData) => {
 
 const deleteAsset = async (assetId) => {
   try {
-    const response = await axios.delete(`/api/assets/${assetId}`);
-    return response.data;
+    await axios.delete(`/api/assets/${assetId}`);
+    return true; // Success indicator
   } catch (error) {
     console.error('Error deleting asset:', error);
     throw error;

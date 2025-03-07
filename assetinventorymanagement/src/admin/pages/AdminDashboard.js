@@ -9,7 +9,7 @@ import CriticalAlerts from './AdminDashboard/CriticalAlerts';
 import ActivityLog from './AdminDashboard/ActivityLog';
 import AssetInventory from './AdminDashboard/AssetInventory';
 import FinancialInsights from './AdminDashboard/FinancialInsights';
-import ReportingExport from './AdminDashboard/ReportingExport';
+// import ReportingExport from './AdminDashboard/ReportingExport';
 import MaintenanceSchedule from './AdminDashboard/MaintenanceSchedule';
 import { faBox, faTicketAlt, faExclamationTriangle, faDollarSign, faUserSlash, faWrench } from '@fortawesome/free-solid-svg-icons';
 
@@ -51,12 +51,7 @@ const AdminDashboard = () => {
       <DashboardMetrics metrics={metricsData} />
       <Row className="g-4">
         <Col lg={8}>
-          <Card className="mb-4">
-            <Card.Body>
-              <Card.Title>Priority Requests</Card.Title>
-              <PriorityRequests requests={recentRequests} />
-            </Card.Body>
-          </Card>
+          
           <Card>
             <Card.Body>
               <Card.Title>Asset Inventory</Card.Title>
@@ -65,7 +60,7 @@ const AdminDashboard = () => {
           </Card>
         </Col>
         <Col lg={4}>
-          <QuickActions />
+          {/* <QuickActions /> */}
           <AssetDistribution assets={assets} />
           <MaintenanceSchedule assets={assets} />
         </Col>
@@ -75,12 +70,12 @@ const AdminDashboard = () => {
           <FinancialInsights assets={assets} />
         </Col>
         <Col lg={6}>
-          <ReportingExport />
+         
         </Col>
       </Row>
       <Row className="mt-4">
         <Col xs={12}>
-          <ActivityLog activities={[]} />
+          {/* <ActivityLog activities={[]} /> */}
         </Col>
       </Row>
     </div>

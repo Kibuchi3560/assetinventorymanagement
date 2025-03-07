@@ -13,7 +13,7 @@ const SystemConfig = () => {
   // Fetch categories and departments from the backend on component mount
   useEffect(() => {
     axios
-      .get('/api/categories', { withCredentials: true })
+      .get('/api/assetinventorymanagement/categories', { withCredentials: true })
       .then((response) => {
         setCategories(response.data);
       })
@@ -22,7 +22,7 @@ const SystemConfig = () => {
       });
 
     axios
-      .get('/api/departments', { withCredentials: true })
+      .get('/api/assetinventorymanagement/departments', { withCredentials: true })
       .then((response) => {
         setDepartments(response.data);
       })
@@ -37,7 +37,7 @@ const SystemConfig = () => {
     if (newCategory.trim()) {
       axios
         .post(
-          ' /api/categories',
+          ' /api/assetinventorymanagement/categories',
           { name: newCategory },
           { withCredentials: true }
         )
@@ -58,7 +58,7 @@ const SystemConfig = () => {
     if (newDepartment.trim()) {
       axios
         .post(
-          '/api/departments',
+          '/api/assetinventorymanagement/departments',
           { name: newDepartment },
           { withCredentials: true }
         )

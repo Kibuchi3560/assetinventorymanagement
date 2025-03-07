@@ -30,14 +30,15 @@ const AssetManagement = () => {
         name: assetName,
         category,
         quantity,
-        image,
+        image_url: image,
       }, { withCredentials: true });
-      if (response.status === 201) {
-        setAssets([...assets, response.data]);
-        alert('Asset added successfully');
-      }
+
+      setAssets([...assets, response.data.asset]);
+      alert('Asset added successfully');
+      resetForm();
     } catch (error) {
-      alert('Error adding asset');
+      setError('Error adding asset');
+      console.error('Error:', error);
     }
   };
 
@@ -48,28 +49,36 @@ const AssetManagement = () => {
         name: assetName,
         category,
         quantity,
-        image,
+        image_url: image,
       }, { withCredentials: true });
-      if (response.status === 200) {
-        setAssets(assets.map((asset) => (asset.id === assetId ? response.data : asset)));
-        alert('Asset updated successfully');
-        setAssetId(null);
-      }
+
+      setAssets(assets.map((asset) => (asset.id === assetId ? response.data.asset : asset)));
+      alert('Asset updated successfully');
+      resetForm();
     } catch (error) {
-      alert('Error updating asset');
+      setError(error.response?.data?.message || 'Error updating asset');
+      console.error('Error:', error);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this asset?')) return;
     try {
-      const response = await axios.delete(`/api/assets/${id}`, { withCredentials: true });
-      if (response.status === 200) {
-        setAssets(assets.filter((asset) => asset.id !== id));
-        alert('Asset deleted successfully');
-      }
+      await axios.delete(`/api/assets/${id}`, { withCredentials: true });
+      setAssets(assets.filter((asset) => asset.id !== id));
+      alert('Asset deleted successfully');
     } catch (error) {
-      alert('Error deleting asset');
+      setError(error.response?.data?.message || 'Error deleting asset');
+      console.error('Error:', error);
     }
+  };
+
+  const resetForm = () => {
+    setAssetId(null);
+    setAssetName('');
+    setCategory('');
+    setQuantity(1);
+    setImage(null);
   };
 
   const handleSelectAsset = (id) => {
@@ -79,20 +88,21 @@ const AssetManagement = () => {
       setAssetName(selectedAsset.name);
       setCategory(selectedAsset.category);
       setQuantity(selectedAsset.quantity);
-      setImage(selectedAsset.image);
+      setImage(selectedAsset.image_url);
     }
   };
 
   return (
     <div>
       <h3>Assets</h3>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <div className="row">
         {assets.length > 0 ? (
           assets.map((asset) => (
             <div className="col-12 col-md-4 mb-4" key={asset.id}>
               <div className="card">
                 <img
-                  src={asset.image || 'https://via.placeholder.com/150'}
+                  src={asset.image_url || 'https://via.placeholder.com/150'}
                   className="card-img-top"
                   alt={asset.name}
                 />
@@ -125,15 +135,14 @@ const AssetManagement = () => {
         </div>
         <div className="mb-3">
           <label className="form-label">Quantity</label>
-          <input type="number" className="form-control" value={quantity} onChange={(e) => setQuantity(e.target.value)} min="1" required />
+          <input type="number" className="form-control" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} min="1" required />
         </div>
         <div className="mb-3">
-          <label className="form-label">Asset Image</label>
-          <input type="text" className="form-control" value={image} onChange={(e) => setImage(e.target.value)} placeholder="Enter image URL" />
+          <label className="form-label">Asset Image URL</label>
+          <input type="text" className="form-control" value={image || ''} onChange={(e) => setImage(e.target.value)} placeholder="Enter image URL" />
         </div>
         <button type="submit" className="btn btn-primary">{assetId ? 'Update Asset' : 'Add Asset'}</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };

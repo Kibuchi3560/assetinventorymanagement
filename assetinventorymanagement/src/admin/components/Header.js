@@ -14,7 +14,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/logout', {}, { withCredentials: true });
+      await axios.post('/api/logout', {}, { withCredentials: true });
       dispatch(logout());
       navigate('/login');
     } catch (err) {
@@ -40,36 +40,17 @@ const Header = () => {
         color: '#fff',
         zIndex: 1000, // High z-index so content scrolls under it
         boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-        paddingBottom: '0.5rem'
+        // paddingBottom: '0.5rem'
       }}
     >
       <div className="container-fluid">
         <div className="d-flex align-items-center justify-content-between py-3">
           {/* Branding */}
           <h1 className="h4 mb-0" style={{ fontWeight: 'bold' }}>
-            shulee
+           ASSET INVENTORY MANAGEMENT SAMPLE WEB APPLICATION
           </h1>
 
-          {/* Search Input */}
-          <div className="position-relative flex-grow-1 mx-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ paddingLeft: '2.5rem', borderRadius: '50px' }}
-            />
-            <FaSearch
-              style={{
-                position: 'absolute',
-                left: '15px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#999'
-              }}
-            />
-          </div>
+          
 
           {/* Profile Section with Icon, Name, and Logout Button */}
           <div className="d-flex align-items-center">
@@ -82,7 +63,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Navigation Bar */}
+        
         
       </div>
       

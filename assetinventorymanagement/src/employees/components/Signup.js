@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import axios from 'axios';
 import './Signup.css';
 
@@ -29,13 +30,17 @@ const SignupPage = () => {
       return;
     }
     try {
-      const response = await axios.post('/api/users', {
-        username: form.name,
-        email: form.email,
-        role: form.role,
-        password: form.password,
-        department: 'Default', // Add department field if required by backend
-      }, { withCredentials: true });
+      const response = await axios.post(
+        '/api/users',
+        {
+          username: form.name,
+          email: form.email,
+          role: form.role,
+          password: form.password,
+          department: 'Default', // Add department field if required by backend
+        },
+        { withCredentials: true }
+      );
       if (response.status === 201) {
         alert('Signup successful!');
       }
@@ -71,7 +76,7 @@ const SignupPage = () => {
           <option value="Employee">Employee</option>
         </select>
         <input
-          type={form.showPassword ? "text" : "password"}
+          type={form.showPassword ? 'text' : 'password'}
           name="password"
           placeholder="Password"
           value={form.password}
@@ -79,21 +84,27 @@ const SignupPage = () => {
           required
         />
         <input
-          type={form.showPassword ? "text" : "password"}
+          type={form.showPassword ? 'text' : 'password'}
           name="confirmPassword"
           placeholder="Confirm Password"
           value={form.confirmPassword}
           onChange={handleChange}
           required
         />
-        <input
-          type="checkbox"
-          checked={form.showPassword}
-          onChange={togglePasswordVisibility}
-        /> Show Password
+        <label>
+          <input
+            type="checkbox"
+            checked={form.showPassword}
+            onChange={togglePasswordVisibility}
+          />{' '}
+          Show Password
+        </label>
         <button type="submit">Sign Up</button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
+      <p>
+        Already have an account? <Link to="/login">Login here</Link>
+      </p>
     </div>
   );
 };
