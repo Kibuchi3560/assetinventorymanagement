@@ -378,6 +378,86 @@ def get_dashboard_metrics():
     ]
     return jsonify(metrics), 200
 
+
+@app.route('/assets', methods=['GET'])
+@role_required('Admin', 'Manager')
+def get_assets():
+    assets = Asset.query.all()
+    return jsonify([asset_to_dict(a) for a in assets]), 200
+
+@app.route('/assets', methods=['POST'])
+@role_required('Admin', 'Manager')
+def create_asset():
+    data = request.get_json()
+    name = data.get('name')
+    category_name = data.get('category')
+    image_url = data.get('image_url', None)
+    if not name or not category_name:
+        return jsonify({"message": "Asset name and category are required"}), 400
+    category = Category.query.filter_by(name=category_name).first()
+    if not category:
+        return jsonify({"message": "Category not found"}), 400
+    asset = Asset(
+        name=name,
+        category_id=category.id,
+        status='Available',
+        quantity=1,
+        image_url=image_url,
+        cost=0,
+        purchase_date=datetime.utcnow()
+    )
+    db.session.add(asset)
+    db.session.commit()
+    return jsonify({"message": "Asset created", "asset": asset_to_dict(asset)}), 201
+
+@app.route('/assets/<int:id>/allocate', methods=['POST'])
+@role_required('Admin', 'Manager')
+def allocate_asset(id):
+    asset = Asset.query.get_or_404(id)
+    data = request.get_json()
+    employee_id = data.get('employee_id')
+    employee = Employee.query.get_or_404(employee_id)
+    if asset.status != 'Available':
+        return jsonify({"message": "Asset not available"}), 400
+    asset.employee_id = employee_id
+    asset.allocation_date = datetime.utcnow()
+    asset.status = 'Allocated'
+    allocation = Allocation(
+        asset_id=asset.id,
+        user_id=data.get('user_id'),
+        quantity=1,
+        allocation_date=datetime.utcnow()
+    )
+    db.session.add(allocation)
+    db.session.commit()
+    return jsonify({"message": "Asset allocated"}), 200
+
+@app.route('/assets/<int:id>', methods=['DELETE'])
+@role_required('Admin', 'Manager')
+def delete_asset(id):
+    asset = Asset.query.get_or_404(id)
+    db.session.delete(asset)
+    db.session.commit()
+    return jsonify({"message": "Asset deleted successfully"}), 200
+
+@app.route('/assets/<int:id>', methods=['PUT'])
+@role_required('Admin', 'Manager')
+def update_asset(id):
+    asset = Asset.query.get_or_404(id)
+    data = request.get_json()
+    asset.name = data.get('name', asset.name)
+    category_name = data.get('category')
+    if category_name:
+        category = Category.query.filter_by(name=category_name).first()
+        if category:
+            asset.category_id = category.id
+        else:
+            return jsonify({"message": "Category not found"}), 400
+    asset.quantity = data.get('quantity', asset.quantity)
+    asset.image_url = data.get('image', asset.image_url)
+    db.session.commit()
+    return jsonify({"message": "Asset updated successfully", "asset": asset_to_dict(asset)}), 200
+
 @app.route('/assetinventorymanagement/maintenance-schedule', methods=['GET'])
 @login_required
 def get_maintenance_schedule():
