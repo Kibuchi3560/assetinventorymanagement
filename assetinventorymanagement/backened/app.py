@@ -52,17 +52,17 @@ def user_to_dict(user):
         "employee_id": employee.user_id if employee else None
     }
 
-
 def asset_to_dict(asset):
     return {
-        "id": asset.id, 
-        "name": asset.name, 
+        "id": asset.id,
+        "name": asset.name,
         "category": asset.category.name if asset.category else None,
-        "status": asset.status, 
-        "quantity": asset.quantity, 
+        "status": asset.status,
+        "quantity": asset.quantity,
         "image_url": asset.image_url,
-        "cost": asset.cost, 
+        "cost": asset.cost,
         "purchaseDate": asset.purchase_date.isoformat(),
+        "allocationDate": asset.allocation_date.isoformat() if asset.allocation_date else None,
         "assignedTo": asset.employee.user_id if asset.employee and hasattr(asset.employee, 'user_id') else None,
         "warrantyExpiry": getattr(asset, 'warrantyExpiry', None)
     }
@@ -85,7 +85,6 @@ def request_to_dict(req):
 # ----------------------------
 # Authentication Endpoints
 # ----------------------------
-
 @app.route('/assetinventorymanagement/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -124,7 +123,6 @@ def logout():
 # ----------------------------
 # User Management Endpoints
 # ----------------------------
-
 @app.route('/users', methods=['GET'])
 @role_required('Admin')
 def get_users():
@@ -157,228 +155,6 @@ def create_user():
 # ----------------------------
 # Asset Management Endpoints
 # ----------------------------
-
-@app.route('/assets', methods=['GET'])
-@role_required('Admin', 'Manager')
-def get_assets():
-    assets = Asset.query.all()
-    return jsonify([asset_to_dict(a) for a in assets]), 200
-
-@app.route('/assets', methods=['POST'])
-@role_required('Admin', 'Manager')
-def create_asset():
-    data = request.get_json()
-    name = data.get('name')
-    category_name = data.get('category')
-    image_url = data.get('image_url', None)
-    if not name or not category_name:
-        return jsonify({"message": "Asset name and category are required"}), 400
-    category = Category.query.filter_by(name=category_name).first()
-    if not category:
-        return jsonify({"message": "Category not found"}), 400
-    asset = Asset(
-        name=name,
-        category_id=category.id,
-        status='Available',
-        quantity=1,
-        image_url=image_url,
-        cost=0,
-        purchase_date=datetime.utcnow()
-    )
-    db.session.add(asset)
-    db.session.commit()
-    return jsonify({"message": "Asset created", "asset": asset_to_dict(asset)}), 201
-
-@app.route('/assets/<int:id>/allocate', methods=['POST'])
-@role_required('Admin', 'Manager')
-def allocate_asset(id):
-    asset = Asset.query.get_or_404(id)
-    data = request.get_json()
-    employee_id = data.get('employee_id')
-    employee = Employee.query.get_or_404(employee_id)
-    if asset.status != 'Available':
-        return jsonify({"message": "Asset not available"}), 400
-    asset.employee_id = employee_id
-    asset.allocation_date = datetime.utcnow()
-    asset.status = 'Allocated'
-    allocation = Allocation(
-        asset_id=asset.id,
-        user_id=data.get('user_id'),
-        quantity=1,
-        allocation_date=datetime.utcnow()
-    )
-    db.session.add(allocation)
-    db.session.commit()
-    return jsonify({"message": "Asset allocated"}), 200
-
-# ----------------------------
-# Request Management Endpoints
-# ----------------------------
-
-@app.route('/requests', methods=['POST'])
-@role_required('Employee')
-def create_request():
-    data = request.get_json()
-    asset_id = data.get('asset_id')
-    if asset_id:
-        asset = Asset.query.get_or_404(asset_id)
-        if asset.employee_id != current_user.id:
-            return jsonify({"message": "Asset not assigned to you"}), 403
-    req_obj = Request(
-        user_id=current_user.id,
-        asset_id=asset_id,
-        request_type=data.get('request_type'),
-        urgency=data.get('urgency'),
-        reason=data.get('reason'),
-        status='Pending',
-        request_date=datetime.utcnow()
-    )
-    db.session.add(req_obj)
-    db.session.commit()
-    return jsonify({"message": "Request submitted", "request": request_to_dict(req_obj)}), 201
-
-@app.route('/requests', methods=['GET'])
-@role_required('Admin', 'Manager', 'Finance')
-def get_requests():
-    status = request.args.get('status')
-    query = Request.query
-    if status:
-        query = query.filter_by(status=status)
-    reqs = query.order_by(Request.request_date).all()
-    return jsonify([request_to_dict(r) for r in reqs]), 200
-
-@app.route('/requests/me', methods=['GET'])
-@role_required('Employee')
-def get_my_requests():
-    status = request.args.get('status')
-    query = Request.query.filter_by(user_id=current_user.id)
-    if status:
-        query = query.filter_by(status=status)
-    reqs = query.all()
-    return jsonify([request_to_dict(r) for r in reqs]), 200
-
-@app.route('/requests/<int:id>', methods=['PUT'])
-@role_required('Manager')
-def update_request(id):
-    req_obj = Request.query.get_or_404(id)
-    data = request.get_json()
-    new_status = data.get('status')
-    if new_status not in ['Approved', 'Rejected']:
-        return jsonify({"message": "Invalid status"}), 400
-    req_obj.status = new_status
-    if req_obj.request_type == 'Repair' and new_status == 'Approved':
-        asset = Asset.query.get(req_obj.asset_id)
-        if asset:
-            asset.status = 'Under Repair'
-    db.session.commit()
-    return jsonify({"message": "Request updated", "request": request_to_dict(req_obj)}), 200
-
-@app.route('/requests/approve-all', methods=['PUT'])
-@role_required('Manager', 'Finance')
-def approve_all_requests():
-    pending_reqs = Request.query.filter_by(status='Pending').all()
-    for req_obj in pending_reqs:
-        req_obj.status = 'Approved'
-    db.session.commit()
-    return jsonify({"message": "All pending requests approved"}), 200
-
-# ----------------------------
-# Categories & Departments Endpoints
-# ----------------------------
-
-@app.route('/assetinventorymanagement/categories', methods=['GET'])
-@login_required
-def get_categories():
-    cats = Category.query.all()
-    return jsonify([cat.name for cat in cats]), 200
-
-@app.route('/assetinventorymanagement/categories', methods=['POST'])
-@login_required
-def add_category():
-    data = request.get_json()
-    name = data.get('name')
-    if not name:
-        return jsonify({"message": "Category name required"}), 400
-    if Category.query.filter_by(name=name).first():
-        return jsonify({"message": "Category already exists"}), 400
-    cat = Category(name=name)
-    db.session.add(cat)
-    db.session.commit()
-    return jsonify({"message": "Category added", "category": cat.name}), 201
-
-@app.route('/assetinventorymanagement/departments', methods=['GET'])
-@login_required
-def get_departments():
-    deps = Department.query.all()
-    return jsonify([dep.name for dep in deps]), 200
-
-@app.route('/assetinventorymanagement/departments', methods=['POST'])
-@login_required
-def add_department():
-    data = request.get_json()
-    name = data.get('name')
-    if not name:
-        return jsonify({"message": "Department name required"}), 400
-    if Department.query.filter_by(name=name).first():
-        return jsonify({"message": "Department already exists"}), 400
-    dep = Department(name=name)
-    db.session.add(dep)
-    db.session.commit()
-    return jsonify({"message": "Department added", "department": dep.name}), 201
-
-# ----------------------------
-# Additional Dashboard Endpoints
-# ----------------------------
-
-@app.route('/assetinventorymanagement/activity-log', methods=['GET'])
-@login_required
-def get_activity_log():
-    # Dummy data; replace with real activity logs.
-    return jsonify([]), 200
-
-@app.route('/assets/allocated', methods=['GET'])
-@login_required
-@role_required('Employee')
-def get_allocated_assets():
-    assets = Asset.query.join(Employee).filter(Employee.user_id == current_user.id).all()
-    return jsonify([asset_to_dict(a) for a in assets]), 200
-
-def asset_to_dict(asset):
-    return {
-        "id": asset.id,
-        "name": asset.name,
-        "category": asset.category.name if asset.category else None,
-        "status": asset.status,
-        "quantity": asset.quantity,
-        "image_url": asset.image_url,
-        "cost": asset.cost,
-        "purchaseDate": asset.purchase_date.isoformat(),
-        "allocationDate": asset.allocation_date.isoformat() if asset.allocation_date else None,
-        "assignedTo": asset.employee.user_id if asset.employee and hasattr(asset.employee, 'user_id') else None,
-        "warrantyExpiry": getattr(asset, 'warrantyExpiry', None)
-    }
-
-
-@app.route('/assetinventorymanagement/alerts', methods=['GET'])
-@login_required
-def get_alerts():
-    # Dummy critical alerts.
-    return jsonify([]), 200
-
-@app.route('/assetinventorymanagement/dashboard-metrics', methods=['GET'])
-@login_required
-def get_dashboard_metrics():
-    total_users = User.query.count()
-    total_assets = Asset.query.count()
-    total_requests = Request.query.count()
-    metrics = [
-        {"icon": "fa-users", "title": "Total Users", "value": total_users, "variant": "primary"},
-        {"icon": "fa-boxes", "title": "Total Assets", "value": total_assets, "variant": "success"},
-        {"icon": "fa-file-alt", "title": "Total Requests", "value": total_requests, "variant": "warning"}
-    ]
-    return jsonify(metrics), 200
-
-
 @app.route('/assets', methods=['GET'])
 @role_required('Admin', 'Manager')
 def get_assets():
@@ -457,6 +233,154 @@ def update_asset(id):
     asset.image_url = data.get('image', asset.image_url)
     db.session.commit()
     return jsonify({"message": "Asset updated successfully", "asset": asset_to_dict(asset)}), 200
+
+# ----------------------------
+# Request Management Endpoints
+# ----------------------------
+@app.route('/requests', methods=['POST'])
+@role_required('Employee')
+def create_request():
+    data = request.get_json()
+    asset_id = data.get('asset_id')
+    if asset_id:
+        asset = Asset.query.get_or_404(asset_id)
+        if asset.employee_id != current_user.id:
+            return jsonify({"message": "Asset not assigned to you"}), 403
+    req_obj = Request(
+        user_id=current_user.id,
+        asset_id=asset_id,
+        request_type=data.get('request_type'),
+        urgency=data.get('urgency'),
+        reason=data.get('reason'),
+        status='Pending',
+        request_date=datetime.utcnow()
+    )
+    db.session.add(req_obj)
+    db.session.commit()
+    return jsonify({"message": "Request submitted", "request": request_to_dict(req_obj)}), 201
+
+@app.route('/requests', methods=['GET'])
+@role_required('Admin', 'Manager', 'Finance')
+def get_requests():
+    status = request.args.get('status')
+    query = Request.query
+    if status:
+        query = query.filter_by(status=status)
+    reqs = query.order_by(Request.request_date).all()
+    return jsonify([request_to_dict(r) for r in reqs]), 200
+
+@app.route('/requests/me', methods=['GET'])
+@role_required('Employee')
+def get_my_requests():
+    status = request.args.get('status')
+    query = Request.query.filter_by(user_id=current_user.id)
+    if status:
+        query = query.filter_by(status=status)
+    reqs = query.all()
+    return jsonify([request_to_dict(r) for r in reqs]), 200
+
+@app.route('/requests/<int:id>', methods=['PUT'])
+@role_required('Manager')
+def update_request(id):
+    req_obj = Request.query.get_or_404(id)
+    data = request.get_json()
+    new_status = data.get('status')
+    if new_status not in ['Approved', 'Rejected']:
+        return jsonify({"message": "Invalid status"}), 400
+    req_obj.status = new_status
+    if req_obj.request_type == 'Repair' and new_status == 'Approved':
+        asset = Asset.query.get(req_obj.asset_id)
+        if asset:
+            asset.status = 'Under Repair'
+    db.session.commit()
+    return jsonify({"message": "Request updated", "request": request_to_dict(req_obj)}), 200
+
+@app.route('/requests/approve-all', methods=['PUT'])
+@role_required('Manager', 'Finance')
+def approve_all_requests():
+    pending_reqs = Request.query.filter_by(status='Pending').all()
+    for req_obj in pending_reqs:
+        req_obj.status = 'Approved'
+    db.session.commit()
+    return jsonify({"message": "All pending requests approved"}), 200
+
+# ----------------------------
+# Categories & Departments Endpoints
+# ----------------------------
+@app.route('/assetinventorymanagement/categories', methods=['GET'])
+@login_required
+def get_categories():
+    cats = Category.query.all()
+    return jsonify([cat.name for cat in cats]), 200
+
+@app.route('/assetinventorymanagement/categories', methods=['POST'])
+@login_required
+def add_category():
+    data = request.get_json()
+    name = data.get('name')
+    if not name:
+        return jsonify({"message": "Category name required"}), 400
+    if Category.query.filter_by(name=name).first():
+        return jsonify({"message": "Category already exists"}), 400
+    cat = Category(name=name)
+    db.session.add(cat)
+    db.session.commit()
+    return jsonify({"message": "Category added", "category": cat.name}), 201
+
+@app.route('/assetinventorymanagement/departments', methods=['GET'])
+@login_required
+def get_departments():
+    deps = Department.query.all()
+    return jsonify([dep.name for dep in deps]), 200
+
+@app.route('/assetinventorymanagement/departments', methods=['POST'])
+@login_required
+def add_department():
+    data = request.get_json()
+    name = data.get('name')
+    if not name:
+        return jsonify({"message": "Department name required"}), 400
+    if Department.query.filter_by(name=name).first():
+        return jsonify({"message": "Department already exists"}), 400
+    dep = Department(name=name)
+    db.session.add(dep)
+    db.session.commit()
+    return jsonify({"message": "Department added", "department": dep.name}), 201
+
+# ----------------------------
+# Additional Dashboard Endpoints
+# ----------------------------
+@app.route('/assetinventorymanagement/activity-log', methods=['GET'])
+@login_required
+def get_activity_log():
+    # Dummy data; replace with real activity logs.
+    return jsonify([]), 200
+
+@app.route('/assets/allocated', methods=['GET'])
+@login_required
+@role_required('Employee')
+def get_allocated_assets():
+    assets = Asset.query.join(Employee).filter(Employee.user_id == current_user.id).all()
+    return jsonify([asset_to_dict(a) for a in assets]), 200
+
+@app.route('/assetinventorymanagement/alerts', methods=['GET'])
+@login_required
+def get_alerts():
+    # Dummy critical alerts.
+    return jsonify([]), 200
+
+@app.route('/assetinventorymanagement/dashboard-metrics', methods=['GET'])
+@login_required
+def get_dashboard_metrics():
+    total_users = User.query.count()
+    total_assets = Asset.query.count()
+    total_requests = Request.query.count()
+    metrics = [
+        {"icon": "fa-users", "title": "Total Users", "value": total_users, "variant": "primary"},
+        {"icon": "fa-boxes", "title": "Total Assets", "value": total_assets, "variant": "success"},
+        {"icon": "fa-file-alt", "title": "Total Requests", "value": total_requests, "variant": "warning"}
+    ]
+    return jsonify(metrics), 200
 
 @app.route('/assetinventorymanagement/maintenance-schedule', methods=['GET'])
 @login_required
